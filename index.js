@@ -18,15 +18,23 @@ var argv          = minimist(process.argv.slice(2), {
     output: 'o',
     mask: 'm',
     debug: 'd',
-    flatten: 'f'
+    flatten: 'f',
+    quiet: 'q'
   },
-  boolean: ['debug'],
+  boolean: ['debug', 'quiet'],
   default: {
+    // Input folder
     input: curDir,
+    // Output folder
     output: null,
+    // Search pattern for glob in input directory
     mask: '**/*.{mp4,avi,mkv,m4v,ts,mov}',
+    // Verbose logging
     debug: false,
-    flatten: false
+    // Do not preserve relative directory structure in output directory
+    flatten: false,
+    // Log only writes, errors, and finish (success, failure) message
+    quiet: false
   },
   // Custom arguments for Handbrake
   // TODO: This doesn't seen to work with non-boolean arguments
@@ -62,9 +70,6 @@ function repeat(str, count) {
   if (str.length == 0 || count == 0) {
     return '';
   }
-  // Ensuring count is a 31-bit integer allows us to heavily optimize the
-  // main part. But anyway, most current (August 2014) browsers can't handle
-  // strings 1 << 28 chars or longer, so:
   if (str.length * count >= 1 << 28) {
     throw new RangeError('repeat count must not overflow maximum string size');
   }
@@ -91,15 +96,18 @@ function msg(message, type) {
           'bgRed' : (type === 'info' ? 'bgCyan' : (type === 'debug' ? 'bgBlue' : 'bgGreen')),
       isWrite = type === 'write',
       header = chalk[headerColor].gray.bold(type.toUpperCase()),
-      hasBars = (type === 'success') || isError || (type === 'failure'),
+      isFinish = (type === 'success') || (type === 'failure'),
+      hasBars = isFinish || isError,
       barColor = (isError || type === 'failure') ? 'red' : 'green',
       colorBar = chalk[barColor](bar);
   if (argv['debug'] && type === 'bar') {
     console.log(message)
   } else if (argv['debug'] || type !== 'debug') {
-    if (hasBars) { console.log(colorBar); }
-    console.log(header + chalk.white.bold('\t' + message));
-    if (hasBars) { console.log(colorBar); }
+    if (!argv['quiet'] || (isError || isWrite || isFinish)) {
+      if (hasBars) { console.log(colorBar); }
+      console.log(header + chalk.white.bold('\t' + message));
+      if (hasBars) { console.log(colorBar); }
+    }
   }
   if (isError) {
     errCount += 1;
