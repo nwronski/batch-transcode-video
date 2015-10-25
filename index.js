@@ -88,7 +88,7 @@ function msg(message, type) {
   }
   var isError = type === 'error',
       headerColor = (isError || type === 'failure') ?
-          'bgRed' : (type === 'info' ? 'bgCyan' : 'bgGreen'),
+          'bgRed' : (type === 'info' ? 'bgCyan' : (type === 'debug' ? 'bgBlue' : 'bgGreen')),
       isWrite = type === 'write',
       header = chalk[headerColor].gray.bold(type.toUpperCase()),
       hasBars = (type === 'success') || isError || (type === 'failure'),
@@ -96,7 +96,7 @@ function msg(message, type) {
       colorBar = chalk[barColor](bar);
   if (argv['debug'] && type === 'bar') {
     console.log(message)
-  } else if (argv['debug'] || type !== 'info') {
+  } else if (argv['debug'] || type !== 'debug') {
     if (hasBars) { console.log(colorBar); }
     console.log(header + chalk.white.bold('\t' + message));
     if (hasBars) { console.log(colorBar); }
@@ -116,7 +116,7 @@ function children(cmd, args, file, dir, mute) {
   });
   return new Promise(function (acc, rej) {
     if (debug) {
-      msg('[Output: ' + cmd + '] ' + file, 'info');
+      msg('[Output: ' + cmd + '] ' + file, 'debug');
       console.log(chalk.gray(bar));
     }
     child.stdout.on('data', function (data) {
@@ -169,17 +169,15 @@ function transcode(filePath) {
   }
   destFilePath = path.normalize(usePath + path.sep + destFileName);
   logFileName = destFilePath + '.log';
-  msg('[Start Processing] ' + fileName, 'info');
+  msg('[Start Processing] ' + fileName, 'debug');
   return mkdirp(usePath)
   .then(function () {
-    msg('[Detecting Crop] ' + fileName, 'info');
     return children('detect-crop', [path.relative(curDir, filePathNorm)], fileName, curDir);
   })
   .then(function (res) {
     var commandLines = res.replace(/\n+$/gm, '');
     var commands = commandLines.split(/\n+/);
-    var useCommand = commands[commands.length - 1].replace(/^\s+|\s+$/, '');
-    // msg('[Crop Output] ' + fileName + "\n" + chalk.gray(bar) + "\n" + useCommand + "\n" + chalk.gray(bar), 'info');
+    var useCommand = commands[commands.length - 1].replace(/^\s+|\s+$/, '');;
     if (!/^transcode\-video/.test(useCommand)) {
       throw new Error('Invalid command returned for (' + fileName + '): ' + useCommand);
     }
@@ -200,18 +198,20 @@ function transcode(filePath) {
     return useArgs;
   })
   .then(function (args) {
+    msg('[Transcoding] ' + fileName, 'info');
     return children(args[0], args.slice(1), fileName, curDir);
   })
   .then(function (output) {
-    msg('[Stop Processing] ' + fileName, 'info');
+    msg('[Stop Processing] ' + fileName, 'debug');
     // Get total running time
+    var destRelPath = path.normalize(usePath + path.sep + destFileName);
     if (argv['dry-run']) {
-      msg('[SIMULATION] ' + destFileName, 'write');
+      msg('[SIMULATION] ' + destRelPath, 'write');
     } else {
       return children('query-handbrake-log', ['time', logFileName], destFileName, curDir, true)
       .then(function (log) {
         var totalTime = log.replace(/^\s+|\s+$/, '').match(/^([0-9]{2}\:[0-9]{2}\:[0-9]{2})/)[1];
-        msg('[' + totalTime + '] ' + destFileName, 'write');
+        msg('[Time: ' + totalTime + '] ' + destRelPath, 'write');
       });
     }
   })
@@ -231,7 +231,7 @@ function transcodeAll(files) {
   return Promise.resolve(true);
 }
 
-msg('Scanning for media: ' + filePattern, 'info');
+msg('Scanning for media: ' + filePattern, 'debug');
 children('tput', ['cols'], null, null, true)
 .then(function (cols) {
   bar = repeat('-', parseInt(cols.trim(), 10));
