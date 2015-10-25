@@ -1,0 +1,38 @@
+{
+  "name": "batch-transcode-video",
+  "version": "0.1.0",
+  "description": "Batch transcode using the video_transcoding gem",
+  "contributors": [
+    "Nick Wronski (https://github.com/nwronski)"
+  ],
+  "keywords": [
+    "mkv",
+    "transcode",
+    "transcode-video"
+  ],
+  "files": [
+    "LICENSE",
+    "CHANGELOG.md",
+    "README.md",
+    "index.js"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "gem install video_transcoding"
+  },
+  "author": "Nick Wronski (https://github.com/nwronski)",
+  "repository": "git@github.com:nwronski/batch-transcode-video.git",
+  "bugs": {
+    "url": "https://github.com/nwronski/batch-transcode-video/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^1.1.1",
+    "glob": "^5.0.15",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "path": "^0.12.7",
+    "shell-quote": "^1.4.3"
+  }
+}
