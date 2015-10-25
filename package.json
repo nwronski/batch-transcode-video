@@ -1,6 +1,6 @@
 {
   "name": "batch-transcode-video",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "Batch transcode using the video_transcoding gem",
   "contributors": [
     "Nick Wronski (https://github.com/nwronski)"
@@ -10,6 +10,10 @@
     "transcode",
     "transcode-video"
   ],
+ "preferGlobal": "true",
+  "bin": {
+    "batch-transcode-video": "bin/batch-transcode-video"
+  },
   "files": [
     "LICENSE",
     "CHANGELOG.md",
@@ -18,7 +22,6 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "gem install video_transcoding"
   },
   "author": "Nick Wronski (https://github.com/nwronski)",
