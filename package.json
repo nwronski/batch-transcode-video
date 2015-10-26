@@ -10,7 +10,7 @@
     "transcode",
     "transcode-video"
   ],
- "preferGlobal": "true",
+  "preferGlobal": "true",
   "bin": {
     "batch-transcode-video": "bin/batch-transcode-video"
   },
@@ -38,6 +38,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
+    "promise": "^7.0.4",
     "shell-quote": "^1.4.3"
   }
 }
