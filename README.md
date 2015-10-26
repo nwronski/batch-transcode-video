@@ -2,9 +2,13 @@
 
 A command-line utility for recursively running batch cropping and transcoding operations on a directory of videos. This utility is a wrapper for a a utility called [transcode_video](https://github.com/donmelton/video_transcoding) which itself is a wrapper for trancoding utilities such as [HandbrakeCLI](https://handbrake.fr), [MKVToolNix](https://www.bunkus.org/videotools/mkvtoolnix/), and [mplayer](http://www.mplayerhq.hu/).
 
-## Installation
+## Prerequisites
 
-**You must have all of the dependencies listed [in this section of the transcode_video README](https://github.com/donmelton/video_transcoding#requirements) to use this utility.**
+Requires [Node.js](https://nodejs.org) and [Ruby](https://www.ruby-lang.org).
+
+**Important:** You must have all of the dependencies listed in this section of [the transcode_video README](https://github.com/donmelton/video_transcoding#requirements).
+
+## Installation
 
 This utility can be installed so that it is globally accessible from the terminal as `batch-transcode-video` using the following command.
 
@@ -25,7 +29,7 @@ A summary is displayed when the entire batch transcoding operation is finished. 
 Recursively search for videos to transcode using [video_transcoding](https://github.com/donmelton/video_transcoding). If an `input` **directory** is not specified then the current directory will be used as the input directory.
 
 ```
-batch-transcode-video --input video/
+batch-transcode-video --input "video/"
 ```
 
 Transcoded files will be placed in the same directory as the source unless you specify an `output` directory. The relative folder structure will be maintained in the output directory unless you use the `flatten` flag.
@@ -59,5 +63,5 @@ If you want to modify the search pattern that will be used to locate video in th
 If you want to provide custom options to `trancode-video` then you can place them at the end of your normal options following a `--` and they will be passed directly to the `transcode-video` program. Find a list
 
 ```
-batch-transcode-video --output "transcoded/" --debug -- --dry-run
+batch-transcode-video --input "video/" --output "transcoded/" --debug -- --dry-run
 ```
