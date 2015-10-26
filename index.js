@@ -8,6 +8,11 @@ var childPromise  = require('./lib/child-promise');
 var repeat        = require('./lib/repeat');
 var curDir        = process.cwd();
 
+if (options['help']) {
+  require('./lib/help')();
+  process.exit(0);
+}
+
 process.on('exit', function () {
   var messages = [];
   if (options['dry-run']) {
