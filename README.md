@@ -38,6 +38,8 @@ If you want to modify the search pattern that will be used to locate video in th
 
 ## Options
 
+- `--help` _Flag: does not accept a value_
+  You can view the manual for this tool by using this flag in the terminal.
 - `--input [path]` (Default: `process.cwd()`) (Alias: `-I`)
   The input **directory** containing the source videos to transcode.
 - `--output [path]` (Default: _same directory as source files_) (Alias: `-O`)
