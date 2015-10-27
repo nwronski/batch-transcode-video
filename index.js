@@ -9,7 +9,7 @@ var repeat        = require('./lib/repeat');
 var curDir        = process.cwd();
 
 if (options['help']) {
-  require('./lib/help')();
+  console.log(require('./lib/help')());
   process.exit(0);
 }
 
