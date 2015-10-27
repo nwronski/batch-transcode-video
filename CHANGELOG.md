@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v0.3.1] - 2015-10-27
+### Fixed
+- Entire `stdout` buffer was being saved to memory for each child process which was a large amount of data for each transcoding operation. Now only the most recent chunk of lines from a child process `stdout` is saved in memory.
+
 ## [v0.3.0] - 2015-10-26
 ### Added
 - Now functions correctly in Windows. Tested in Windows 10 x64.
@@ -51,7 +55,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.1...HEAD
+[v0.3.1]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.0...v0.3.1
 [v0.3.0]: https://github.com/nwronski/batch-transcode-video/compare/v0.2.1...v0.3.0
 [v0.2.1]: https://github.com/nwronski/batch-transcode-video/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/nwronski/batch-transcode-video/releases/tag/v0.2.0
