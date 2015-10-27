@@ -3,6 +3,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v0.3.0] - 2015-10-26
+### Added
+- Now functions correctly in Windows. Tested in Windows 10 x64.
+- Support for `--input` and `--output` options containing Windows paths that have spaces.
+  ```
+  > batch-transcode-video --input my` videos --output other` folder\temp
+  ```
+- Generate an error for unknown options.
+  ```
+  > batch-transcode-video --hat --debug
+  ERROR   Unrecognized command --hat provided.
+  If you would like to supply custom options to transcode-video then put
+  them at end of the command after a double dash "--". For example to pass
+  the  "--dry-run" command to transcode-video:
+
+  batch-transcode-video --input my_videos/ -- --dry-run
+  ```
+- Added `--help` option to view the manual in the terminal.
+
+### Fixed
+- Capture child process error events. Previously unhandled errors (e.g. `ENOENT`) when spawning child processes.
+- Support absolute source paths for `--input` and `--output` options.
+
 ## [v0.2.1] - 2015-10-25
 ### Fixed
 - Unable to `npm install -g batch-transcode-video` due to missing `promise` dependency in `package.json`.
@@ -28,6 +51,7 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v0.2.1...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/nwronski/batch-transcode-video/compare/v0.2.1...v0.3.0
 [v0.2.1]: https://github.com/nwronski/batch-transcode-video/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/nwronski/batch-transcode-video/releases/tag/v0.2.0
