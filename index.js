@@ -35,10 +35,11 @@ return glob(filePattern, {})
   if (files.length === 0) {
     throw new Error('[No Files Found] ' + filePattern);
   }
+  say.notify._fileCount = files.length;
   return transcoder(files);
 }, function (err) {
   throw new Error('[Glob Error] ' + err.message);
 })
 .catch(function (err) {
-  say(err.message);
+  notify(err);
 });
