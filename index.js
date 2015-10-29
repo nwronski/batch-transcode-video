@@ -1,4 +1,5 @@
 var path          = require('path');
+var chalk         = require('chalk');
 var denodeify     = require('promise').denodeify;
 var glob          = denodeify(require('glob'));
 var transcoder    = require('./lib/transcoder');
@@ -14,32 +15,31 @@ if (options['help']) {
 }
 
 process.on('exit', function () {
-  var messages = [];
-  if (options['dry-run']) {
-    messages.push('This was a dry run.');
-  } else {
-    messages.push('Created ' + say.writeCount + ' file' + (say.writeCount !== 1 ? 's' : '') + '.');
-  }
-  messages.push('Encountered ' + say.errCount + ' error' + (say.errCount !== 1 ? 's' : '') + '.');
-  var finalState = (say.errCount > 0 || (say.writeCount <= 0 && !options['dry-run'])) ? 'failure' : 'success';
-  say(messages.join(' '), finalState);
-  if (say.errCount > 0) {
+  var summary = say.getSummary();
+  say.logSummary(summary);
+  if (!summary.isSuccess) {
     process.reallyExit(1);
   }
 });
 
 var filePattern = path.normalize(options['input'] + path.sep + options['mask']);
-say('Scanning for media: ' + filePattern, 'debug');
+console.log(chalk.white.bold('- Starting batch operation...'));
+say.notify('Scanning for media using search pattern.', say.DEBUG, filePattern);
 return glob(filePattern, {})
 .then(function (files) {
   if (files.length === 0) {
-    throw new Error('[No Files Found] ' + filePattern);
+    var e = new Error('No files found for search pattern provided.');
+    e.file = filePattern;
+    throw e;
   }
   say.notify._fileCount = files.length;
   return transcoder(files);
 }, function (err) {
-  throw new Error('[Glob Error] ' + err.message);
+  e.file = filePattern;
+  e.additional = err.message;
+  e.message = 'File system error encountered while scanning for media.';
+  throw err;
 })
 .catch(function (err) {
-  notify(err);
+  say.notify(err);
 });
