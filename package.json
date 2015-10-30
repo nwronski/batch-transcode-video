@@ -10,6 +10,7 @@
     "transcode",
     "transcode-video"
   ],
+  "engine": "node >= 4.0.0",
   "preferGlobal": "true",
   "bin": {
     "batch-transcode-video": "bin/batch-transcode-video"
