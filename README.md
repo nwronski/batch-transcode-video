@@ -38,12 +38,14 @@ If you want to modify the search pattern that will be used to locate video in th
 
 ## Options
 
-- `--help` _Flag: does not accept a value_
+- `--help` _Flag: does not accept a value_ (Alias: `-h`)
   You can view the manual for this tool by using this flag in the terminal.
-- `--input [path]` (Default: `process.cwd()`) (Alias: `-I`)
+- `--input [path]` (Default: `process.cwd()`) (Alias: `-i`)
   The input **directory** containing the source videos to transcode.
-- `--output [path]` (Default: _same directory as source files_) (Alias: `-O`)
+- `--output [path]` (Default: _same directory as source files_) (Alias: `-o`)
   The output **directory** to hold the transcoded videos. If you do not specify an output directory then each transcoded file will be placed in the same directory as its source file. Note: if a source file is already in the same file format as the transcoded video (e.g.: both source and output are both `.mkv`) then you must specify an output directory, as the program will not overwrite existing files.
+- `--mask [pattern]` (Default: `**/*.{mp4,avi,mkv,m4v,ts,mov}`) (Alias: `-m`)
+  Search pattern to use for input directory. Note that the default pattern will search in nested directories. For more information about what values can be used, see the [glob](https://github.com/isaacs/node-glob) documentation.
 - `--diff` _Flag: does not accept a value_ (Default: `false`)
   Enable this option if you only want to transcode source files that do not exist already in the `output` folder.
   - If a destination file already exists in the `output` directory:
@@ -51,8 +53,6 @@ If you want to modify the search pattern that will be used to locate video in th
     - And `diff` is **not enabled**, an error will be generated letting you know that the file already exists.
   - If you want to transcode a batch of videos in-place (i.e.: without specifying an `output` directory) then you should enabled this option to prevent errors from being generated when the source and destination file names have the same extension.
     - For example: trying to transcode a `.mkv` video into a `.mkv` video without supplying an external `output` directory will generate an error unless you specify the `diff` flag.
-- `--mask [pattern]` (Default: `**/*.{mp4,avi,mkv,m4v,ts,mov}`) (Alias: `-M`)
-  Search pattern to use for input directory. Note that the default pattern will search in nested directories. For more information about what values can be used, see the [glob](https://github.com/isaacs/node-glob) documentation.
 - `--debug` _Flag: does not accept a value_ (Default: `false`)
   Enable verbose logging mode. Will allow you to see the output from the child processes spawned for `detect-crop` and `transcode-video`.
 - `--flatten` _Flag: does not accept a value_ (Default: `false`)
