@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../lib/environment.js"],"names":[],"mappings":";;AAAA,IAAI,CAAC,GAAe,EAAE,CAAC;AACvB,CAAC,CAAC,OAAO,GAAG,OAAO,CAAC,IAAI,CAAC,OAAO,CAAC,QAAQ,CAAC,CAAC;AAC3C,MAAM,CAAC,OAAO,GAAG,CAAC,CAAC","file":"environment.js","sourcesContent":["var e             = {};\ne.windows = /^win/i.test(process.platform);\nmodule.exports = e;\n"]}

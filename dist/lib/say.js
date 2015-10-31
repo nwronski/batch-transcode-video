@@ -1,14 +1,16 @@
-var chalk         = require('chalk');
-var options       = require('./options');
-var Promise       = require('promise');
-var isString      = require('./util').isString;
-var INFO          = 'INFO';
-var ERROR         = 'ERROR';
-var DEBUG         = 'DEBUG';
-var WRITE         = 'WRITE';
+'use strict';
+
+var chalk = require('chalk');
+var options = require('./options');
+var Promise = require('promise');
+var isString = require('./util').isString;
+var INFO = 'INFO';
+var ERROR = 'ERROR';
+var DEBUG = 'DEBUG';
+var WRITE = 'WRITE';
 
 function log(obj) {
-  let shouldEmit = true;
+  var shouldEmit = true;
   var fileColor = obj.type === ERROR ? 'yellow' : 'blue';
   var headerBg;
   switch (obj.type) {
@@ -28,9 +30,11 @@ function log(obj) {
       headerBg = 'bgRed';
       break;
   }
-  if (!shouldEmit) { return false; }
+  if (!shouldEmit) {
+    return false;
+  }
   if (obj.message) {
-    var t = chalk.gray.bold(('0' + (obj.time).toLocaleTimeString()).slice(-11) + '  ');
+    var t = chalk.gray.bold(('0' + obj.time.toLocaleTimeString()).slice(-11) + '  ');
     var h = chalk[headerBg].gray.bold(' ' + obj.type.toUpperCase() + ' ');
     var m = chalk.white.bold('  ' + obj.message);
 
@@ -73,8 +77,12 @@ notify.stopProgressTimer = function stopProgressTimer() {
 };
 
 function getSummary() {
-  var errors = notify._packages.filter(p => p.type === ERROR);
-  var writes = notify._packages.filter(p => p.type === WRITE);
+  var errors = notify._packages.filter(function (p) {
+    return p.type === ERROR;
+  });
+  var writes = notify._packages.filter(function (p) {
+    return p.type === WRITE;
+  });
   var dryRun = options['dry-run'];
   return {
     writes: writes,
@@ -84,7 +92,7 @@ function getSummary() {
     skipCount: notify._skipCount,
     fileCount: notify._fileCount,
     isDryRun: dryRun,
-    isSuccess: errors.length === 0 && (dryRun || (writes.length > 0 && writes.length === notify._fileCount))
+    isSuccess: errors.length === 0 && (dryRun || writes.length > 0 && writes.length === notify._fileCount)
   };
 }
 
@@ -94,14 +102,16 @@ function logSummary(summary) {
 
   if (summary.skipCount > 0) {
     plur = summary.writeCount !== 1 ? 's' : '';
-    console.log(chalk.cyan.bold(`  -> ${summary.skipCount} file${plur} skipped.`));
+    console.log(chalk.cyan.bold('  -> ' + summary.skipCount + ' file' + plur + ' skipped.'));
   }
 
   if (summary.writeCount > 0) {
     plur = summary.writeCount !== 1 ? 's' : '';
-    console.log(chalk.blue.bold(`  -> ${summary.writeCount} file${plur} of ${summary.fileCount} total transcoded.`));
+    console.log(chalk.blue.bold('  -> ' + summary.writeCount + ' file' + plur + ' of ' + summary.fileCount + ' total transcoded.'));
     if (options['debug']) {
-      summary.writes.forEach((p) => log(p));
+      summary.writes.forEach(function (p) {
+        return log(p);
+      });
     }
   } else if (!summary.isDryRun) {
     console.log(chalk.yellow.bold('  -> No files created.'));
@@ -109,9 +119,11 @@ function logSummary(summary) {
 
   if (summary.errorCount > 0) {
     plur = summary.errorCount !== 1 ? 's' : '';
-    console.log(chalk.yellow.bold(`  -> ${summary.errorCount} file${plur} failed to transcode.`));
+    console.log(chalk.yellow.bold('  -> ' + summary.errorCount + ' file' + plur + ' failed to transcode.'));
     if (options['debug']) {
-      summary.errors.forEach((p) => log(p));
+      summary.errors.forEach(function (p) {
+        return log(p);
+      });
     }
   }
 
@@ -123,12 +135,13 @@ function logSummary(summary) {
 }
 
 module.exports = {
-  getSummary:   getSummary,
-  logSummary:   logSummary,
-  log:          log,
-  notify:       notify,
-  INFO:         INFO,
-  ERROR:        ERROR,
-  DEBUG:        DEBUG,
-  WRITE:        WRITE
+  getSummary: getSummary,
+  logSummary: logSummary,
+  log: log,
+  notify: notify,
+  INFO: INFO,
+  ERROR: ERROR,
+  DEBUG: DEBUG,
+  WRITE: WRITE
 };
+//# sourceMappingURL=say.js.map

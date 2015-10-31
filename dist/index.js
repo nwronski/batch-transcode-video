@@ -1,13 +1,15 @@
-var path          = require('path');
-var chalk         = require('chalk');
-var denodeify     = require('promise').denodeify;
-var glob          = denodeify(require('glob'));
-var transcoder    = require('./lib/transcoder');
-var options       = require('./lib/options');
-var say           = require('./lib/say');
-var childPromise  = require('./lib/child-promise');
-var repeat        = require('./lib/repeat');
-var curDir        = process.cwd();
+'use strict';
+
+var path = require('path');
+var chalk = require('chalk');
+var denodeify = require('promise').denodeify;
+var glob = denodeify(require('glob'));
+var transcoder = require('./lib/transcoder');
+var options = require('./lib/options');
+var say = require('./lib/say');
+var childPromise = require('./lib/child-promise');
+var repeat = require('./lib/repeat');
+var curDir = process.cwd();
 
 if (options['help']) {
   console.log(require('./lib/help')());
@@ -25,8 +27,7 @@ process.on('exit', function () {
 var filePattern = path.normalize(options['input'] + path.sep + options['mask']);
 console.log(chalk.white.bold('- Starting batch operation...'));
 say.notify('Scanning for media using search pattern.', say.DEBUG, filePattern);
-glob(filePattern, {})
-.then(function (files) {
+glob(filePattern, {}).then(function (files) {
   if (files.length === 0) {
     var e = new Error('No files found for search pattern provided.');
     e.file = filePattern;
@@ -39,10 +40,9 @@ glob(filePattern, {})
   e.additional = err.message;
   e.message = 'File system error encountered while scanning for media.';
   throw err;
-})
-.catch(function (err) {
+}).catch(function (err) {
   say.notify(err);
-})
-.then(function () {
+}).then(function () {
   process.exit(0);
 });
+//# sourceMappingURL=index.js.map

@@ -4,4 +4,4 @@
 
 process.title = 'batch-transcode-video';
 
-require('../index');
+require('../dist/index');
