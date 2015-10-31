@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-
 'use strict';
 
 process.title = 'batch-transcode-video';
 
-require('../dist/index');
+require('../dist/index.js').default();

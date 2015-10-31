@@ -1,10 +1,23 @@
 'use strict';
 
-var minimist = require('minimist');
-var path = require('path');
-var splitter = require('./splitter');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _minimist = require('minimist');
+
+var _minimist2 = _interopRequireDefault(_minimist);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _util = require('./util.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var curDir = process.cwd();
-var argv = minimist(process.argv.slice(2), {
+var defs = {
   '--': true,
   alias: {
     input: 'i',
@@ -20,7 +33,7 @@ var argv = minimist(process.argv.slice(2), {
     // Output folder
     output: null,
     // Search pattern for glob in input directory
-    mask: '**' + path.sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
+    mask: '**' + _path2.default.sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
     // Verbose logging
     debug: false,
     // Do not preserve relative directory structure in output directory
@@ -39,12 +52,13 @@ var argv = minimist(process.argv.slice(2), {
     errMessage.push('transcode-video then put them at end of the command');
     errMessage.push('after a double dash "--". For example to pass the ');
     errMessage.push('"--dry-run" command to transcode-video:');
-    console.log(splitter(errMessage.join(' '), true, 60));
+    console.log((0, _util.splitter)(errMessage.join(' '), true, 60));
     console.log(chalk.white.bold('batch-transcode-video --input my_videos/ -- --dry-run'));
     process.exit(1);
   }
-});
-argv['input'] = !path.isAbsolute(argv['input']) ? path.resolve(curDir, argv['input']) : path.normalize(argv['input']);
+};
+var argv = (0, _minimist2.default)(process.argv.slice(2), defs);
+argv['input'] = _path2.default.resolve(curDir, argv['input']);
 argv['dry-run'] = argv['--'].length ? argv['--'].reduce(function (prev, cur) {
   return prev || /^\-\-dry\-run$/i.test(cur.trim());
 }, false) : false;
@@ -57,5 +71,5 @@ argv['dest-ext'] = argv['--'].reduce(function (prev, cur) {
   return prev;
 }, 'mkv');
 
-module.exports = argv;
+exports.default = argv;
 //# sourceMappingURL=options.js.map

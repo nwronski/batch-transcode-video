@@ -1,28 +1,49 @@
 'use strict';
 
-var chalk = require('chalk');
-var options = require('./options');
-var Promise = require('promise');
-var isString = require('./util').isString;
-var INFO = 'INFO';
-var ERROR = 'ERROR';
-var DEBUG = 'DEBUG';
-var WRITE = 'WRITE';
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WRITE = exports.DEBUG = exports.ERROR = exports.INFO = undefined;
+exports.log = log;
+exports.notify = notify;
+exports.getSummary = getSummary;
+exports.logSummary = logSummary;
+
+var _chalk = require('chalk');
+
+var _chalk2 = _interopRequireDefault(_chalk);
+
+var _options = require('./options');
+
+var _options2 = _interopRequireDefault(_options);
+
+var _promise = require('promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _util = require('./util');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var INFO = exports.INFO = 'INFO';
+var ERROR = exports.ERROR = 'ERROR';
+var DEBUG = exports.DEBUG = 'DEBUG';
+var WRITE = exports.WRITE = 'WRITE';
 
 function log(obj) {
   var shouldEmit = true;
   var fileColor = obj.type === ERROR ? 'yellow' : 'blue';
-  var headerBg;
+  var headerBg = undefined;
   switch (obj.type) {
     case WRITE:
       headerBg = 'bgGreen';
       break;
     case DEBUG:
-      shouldEmit = options['debug'];
+      shouldEmit = _options2.default['debug'];
       headerBg = 'bgBlue';
       break;
     case INFO:
-      shouldEmit = !options['quiet'];
+      shouldEmit = !_options2.default['quiet'];
       headerBg = 'bgCyan';
       break;
     case ERROR:
@@ -34,11 +55,11 @@ function log(obj) {
     return false;
   }
   if (obj.message) {
-    var t = chalk.gray.bold(('0' + obj.time.toLocaleTimeString()).slice(-11) + '  ');
-    var h = chalk[headerBg].gray.bold(' ' + obj.type.toUpperCase() + ' ');
-    var m = chalk.white.bold('  ' + obj.message);
+    var t = _chalk2.default.gray.bold(('0' + obj.time.toLocaleTimeString()).slice(-11) + '  ');
+    var h = _chalk2.default[headerBg].gray.bold(' ' + obj.type.toUpperCase() + ' ');
+    var m = _chalk2.default.white.bold('  ' + obj.message);
 
-    console.log(chalk[fileColor].bold('  -> ' + obj.file));
+    console.log(_chalk2.default[fileColor].bold('  -> ' + obj.file));
     console.log('    -> ' + t + h + m);
   }
   if (obj.additional) {
@@ -50,8 +71,8 @@ function log(obj) {
 function notify(m, t, f, a) {
   var pkg = m;
   var type = t || ERROR;
-  if (m == null || isString(m)) {
-    var addt = type === ERROR || options['debug'] ? a : null;
+  if (m == null || (0, _util.isString)(m)) {
+    var addt = type === ERROR || _options2.default['debug'] ? a : null;
     pkg = {
       message: m,
       type: type,
@@ -83,7 +104,7 @@ function getSummary() {
   var writes = notify._packages.filter(function (p) {
     return p.type === WRITE;
   });
-  var dryRun = options['dry-run'];
+  var dryRun = _options2.default['dry-run'];
   return {
     writes: writes,
     errors: errors,
@@ -97,30 +118,30 @@ function getSummary() {
 }
 
 function logSummary(summary) {
-  var plur;
-  console.log(chalk.white.bold('\n\n- Batch operation summary...'));
+  var plur = undefined;
+  console.log(_chalk2.default.white.bold('\n\n- Batch operation summary...'));
 
   if (summary.skipCount > 0) {
     plur = summary.writeCount !== 1 ? 's' : '';
-    console.log(chalk.cyan.bold('  -> ' + summary.skipCount + ' file' + plur + ' skipped.'));
+    console.log(_chalk2.default.cyan.bold('  -> ' + summary.skipCount + ' file' + plur + ' skipped.'));
   }
 
   if (summary.writeCount > 0) {
     plur = summary.writeCount !== 1 ? 's' : '';
-    console.log(chalk.blue.bold('  -> ' + summary.writeCount + ' file' + plur + ' of ' + summary.fileCount + ' total transcoded.'));
-    if (options['debug']) {
+    console.log(_chalk2.default.blue.bold('  -> ' + summary.writeCount + ' file' + plur + ' of ' + summary.fileCount + ' total transcoded.'));
+    if (_options2.default['debug']) {
       summary.writes.forEach(function (p) {
         return log(p);
       });
     }
   } else if (!summary.isDryRun) {
-    console.log(chalk.yellow.bold('  -> No files created.'));
+    console.log(_chalk2.default.yellow.bold('  -> No files created.'));
   }
 
   if (summary.errorCount > 0) {
     plur = summary.errorCount !== 1 ? 's' : '';
-    console.log(chalk.yellow.bold('  -> ' + summary.errorCount + ' file' + plur + ' failed to transcode.'));
-    if (options['debug']) {
+    console.log(_chalk2.default.yellow.bold('  -> ' + summary.errorCount + ' file' + plur + ' failed to transcode.'));
+    if (_options2.default['debug']) {
       summary.errors.forEach(function (p) {
         return log(p);
       });
@@ -128,20 +149,9 @@ function logSummary(summary) {
   }
 
   if (summary.isSuccess) {
-    console.log(chalk.green.bold('  -> Finished without error.'));
+    console.log(_chalk2.default.green.bold('  -> Finished without error.'));
   } else {
-    console.log(chalk.red.bold('  -> Finished with errors.'));
+    console.log(_chalk2.default.red.bold('  -> Finished with errors.'));
   }
 }
-
-module.exports = {
-  getSummary: getSummary,
-  logSummary: logSummary,
-  log: log,
-  notify: notify,
-  INFO: INFO,
-  ERROR: ERROR,
-  DEBUG: DEBUG,
-  WRITE: WRITE
-};
 //# sourceMappingURL=say.js.map
