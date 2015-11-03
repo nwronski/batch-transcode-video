@@ -1,6 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports.isFunction = isFunction;
@@ -8,18 +8,25 @@ exports.isString = isString;
 exports.type = type;
 exports.repeat = repeat;
 exports.splitter = splitter;
+
 function isFunction(obj) {
   return type(obj) === 'function';
-};
+}
+
+;
 
 function isString(obj) {
   return type(obj) === 'string';
-};
+}
+
+;
 
 function type(obj) {
   var typeMatches = Object.prototype.toString.call(obj).match(/\[object\s([a-z]+)\]/i);
   return typeMatches != null ? typeMatches[1].toLowerCase() : null;
-};
+}
+
+;
 
 function repeat(str, count) {
   if (str == null) {
@@ -55,7 +62,9 @@ function repeat(str, count) {
     str += str;
   }
   return rpt;
-};
+}
+
+;
 
 function splitter(str, left, len) {
   var MAX_LENGTH = len || 40;
@@ -85,5 +94,6 @@ function splitter(str, left, len) {
   });
   addLine();
   return built;
-};
-//# sourceMappingURL=util.js.map
+}
+
+;

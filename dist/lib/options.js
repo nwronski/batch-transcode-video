@@ -1,8 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _minimist = require('minimist');
 
@@ -12,9 +14,7 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _util = require('./util.js');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _utilJs = require('./util.js');
 
 var curDir = process.cwd();
 var defs = {
@@ -27,13 +27,13 @@ var defs = {
   },
   boolean: ['debug', 'quiet', 'flatten', 'diff', 'help'],
   string: ['input', 'output', 'mask'],
-  default: {
+  'default': {
     // Input folder
     input: curDir,
     // Output folder
     output: null,
     // Search pattern for glob in input directory
-    mask: '**' + _path2.default.sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
+    mask: '**' + _path2['default'].sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
     // Verbose logging
     debug: false,
     // Do not preserve relative directory structure in output directory
@@ -52,13 +52,13 @@ var defs = {
     errMessage.push('transcode-video then put them at end of the command');
     errMessage.push('after a double dash "--". For example to pass the ');
     errMessage.push('"--dry-run" command to transcode-video:');
-    console.log((0, _util.splitter)(errMessage.join(' '), true, 60));
+    console.log((0, _utilJs.splitter)(errMessage.join(' '), true, 60));
     console.log(chalk.white.bold('batch-transcode-video --input my_videos/ -- --dry-run'));
     process.exit(1);
   }
 };
-var argv = (0, _minimist2.default)(process.argv.slice(2), defs);
-argv['input'] = _path2.default.resolve(curDir, argv['input']);
+var argv = (0, _minimist2['default'])(process.argv.slice(2), defs);
+argv['input'] = _path2['default'].resolve(curDir, argv['input']);
 argv['dry-run'] = argv['--'].length ? argv['--'].reduce(function (prev, cur) {
   return prev || /^\-\-dry\-run$/i.test(cur.trim());
 }, false) : false;
@@ -71,5 +71,5 @@ argv['dest-ext'] = argv['--'].reduce(function (prev, cur) {
   return prev;
 }, 'mkv');
 
-exports.default = argv;
-//# sourceMappingURL=options.js.map
+exports['default'] = argv;
+module.exports = exports['default'];

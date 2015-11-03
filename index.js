@@ -1,52 +1,82 @@
-import chalk from 'chalk';
-import path from 'path';
-import {denodeify} from 'promise';
+import Promise from 'bluebird';
 import _glob from 'glob';
-import help from './lib/help.js';
-let glob = denodeify(_glob);
-import transcoder from './lib/transcoder.js';
-import options from './lib/options.js';
-import * as say from './lib/say.js';
-import childPromise from './lib/child-promise.js';
-import {repeat} from './lib/util.js';
-let curDir = process.cwd();
+let glob = Promise.promisify(_glob);
+import {stat as _stat} from 'fs';
+let stat = Promise.promisify(_stat);
+import TranscodeError from './lib/transcode-error.js';
+import VideoFile from './lib/video-file.js';
 
-export default function batchTranscodeVideo() {
-  if (options['help']) {
-    console.log(help());
-    process.exit(0);
+export default class BatchTranscodeVideo {
+  static get INACTIVE() { return 0; }
+  static get RUNNING() { return 1; }
+  static get FINISHED() { return 2; }
+  static get ERRORED() { return 3; }
+
+  constructor(filePattern, options) {
+    this.filePattern = filePattern;
+    this.options = options;
+    this.status = BatchTranscodeVideo.INACTIVE;
+    this.files = new Set();
+    this._ready = this.createEntries();
+    return this;
   }
 
-  process.on('exit', function () {
-    let summary = say.getSummary();
-    say.logSummary(summary);
-    if (!summary.isSuccess) {
-      process.reallyExit(1);
-    }
-  });
+  createEntries() {
+    return glob(this.filePattern, {})
+    .then((files) => {
+      if (files.length === 0) {
+        throw new TranscodeError('No files found for search pattern provided.', filePattern);
+      }
+      return files;
+    }, (err) => {
+      throw new TranscodeError('File system error encountered while scanning for media.', filePattern, err.message);
+    })
+    .map((file) => this.resolvePath(file), {
+      concurrency: 3
+    })
+    .map((entry) => {
+      this.files.add(entry);
+    })
+    .then(() => this.files);
+  }
 
-  let filePattern = path.normalize(options['input'] + path.sep + options['mask']);
-  console.log(chalk.white.bold('- Starting batch operation...'));
-  say.notify('Scanning for media using search pattern.', say.DEBUG, filePattern);
-  return glob(filePattern, {})
-  .then(function (files) {
-    if (files.length === 0) {
-      let e = new Error('No files found for search pattern provided.');
-      e.file = filePattern;
-      throw e;
-    }
-    say.notify._fileCount = files.length;
-    return transcoder(files);
-  }, function (err) {
-    e.file = filePattern;
-    e.additional = err.message;
-    e.message = 'File system error encountered while scanning for media.';
-    throw err;
-  })
-  .catch(function (err) {
-    say.notify(err);
-  })
-  .then(function () {
-    process.exit(0);
-  });
+  transcodeAll() {
+    return this._ready
+    .then(() => {
+      this.status = BatchTranscodeVideo.RUNNING;
+      return this.files;
+    })
+    .mapSeries((video) => {
+      this.currentFile = video;
+      return this.currentFile.transcode();
+    })
+    .then(() => {
+      this.status = BatchTranscodeVideo.FINISHED;
+      this.currentFile = null;
+    })
+    .catch((err) => {
+      this.status = BatchTranscodeVideo.ERRORED;
+      throw err;
+    });
+  }
+
+  resolvePath(filePath) {
+    return stat(filePath)
+    .then((stats) => {
+      return new VideoFile(filePath, stats, this.options);
+    });
+  }
+
+  get ready() {
+    return this._ready;
+  }
+
+  // get currentFile() {
+  //   for (let video of this.files) {
+  //     if (video.isRunning) {
+  //       return video;
+  //     }
+  //   }
+  //   return null;
+  // }
 };

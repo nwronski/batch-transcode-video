@@ -1,17 +1,21 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
-exports.default = transcoder;
+exports['default'] = transcoder;
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
-var _options = require('./options.js');
+var _optionsJs = require('./options.js');
 
-var _options2 = _interopRequireDefault(_options);
+var _optionsJs2 = _interopRequireDefault(_optionsJs);
 
 var _path = require('path');
 
@@ -25,27 +29,21 @@ var _mkdirp3 = _interopRequireDefault(_mkdirp2);
 
 var _fs = require('fs');
 
-var _childPromise = require('./child-promise.js');
+var _childPromiseJs = require('./child-promise.js');
 
-var _childPromise2 = _interopRequireDefault(_childPromise);
+var _childPromiseJs2 = _interopRequireDefault(_childPromiseJs);
 
 var _shellQuote = require('shell-quote');
 
-var _say = require('./say.js');
+var _sayJs = require('./say.js');
 
-var say = _interopRequireWildcard(_say);
+var say = _interopRequireWildcard(_sayJs);
 
 var _pace = require('pace');
 
 var _pace2 = _interopRequireDefault(_pace);
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _typeof(obj) { return obj && obj.constructor === Symbol ? "symbol" : typeof obj; }
-
-var mkdirp = (0, _promise.denodeify)(_mkdirp3.default);
+var mkdirp = (0, _promise.denodeify)(_mkdirp3['default']);
 var stat = (0, _promise.denodeify)(_fs.stat);
 
 var curDir = process.cwd();
@@ -76,7 +74,7 @@ function getErrorHandler(file) {
 function transcoder(files) {
   var unknownSizes = say.notify._fileCount;
   // TODO: get progress bar to render at 0%
-  var progressBar = (0, _pace2.default)({ total: Math.max(unknownSizes * 100, 100) });
+  var progressBar = (0, _pace2['default'])({ total: Math.max(unknownSizes * 100, 100) });
   var fileSizes = [];
   var knownSizes = function knownSizes() {
     var frac = arguments.length <= 0 || arguments[0] === undefined ? 1.0 : arguments[0];
@@ -128,11 +126,11 @@ function transcoder(files) {
         startTime = Date.now();
         lastTime = startTime;
         var filePath = arr.shift();
-        var filePathNorm = _path2.default.normalize(filePath);
-        var fileName = _path2.default.basename(filePathNorm);
-        var filePathDir = _path2.default.dirname(filePathNorm);
+        var filePathNorm = _path2['default'].normalize(filePath);
+        var fileName = _path2['default'].basename(filePathNorm);
+        var filePathDir = _path2['default'].dirname(filePathNorm);
         // TODO: will change based on custom options
-        var destFileName = _path2.default.basename(fileName, _path2.default.extname(fileName)) + '.' + _options2.default['dest-ext'];
+        var destFileName = _path2['default'].basename(fileName, _path2['default'].extname(fileName)) + '.' + _optionsJs2['default']['dest-ext'];
         var usePath = undefined,
             logFileName = undefined,
             destFilePath = undefined,
@@ -140,11 +138,11 @@ function transcoder(files) {
         var errCatcher = getErrorHandler(fileName);
         var sourceFileSize = undefined;
         // console.log(chalk.blue.bold('- ' + fileName));
-        if (_options2.default['output']) {
-          var outputDir = _path2.default.relative(curDir, _options2.default['output']);
-          usePath = !_options2.default['flatten'] ?
+        if (_optionsJs2['default']['output']) {
+          var outputDir = _path2['default'].relative(curDir, _optionsJs2['default']['output']);
+          usePath = !_optionsJs2['default']['flatten'] ?
           // Add relative paths from --input to filePathDir when --o given
-          _path2.default.resolve(outputDir, _path2.default.relative(_options2.default['input'], filePathDir)) :
+          _path2['default'].resolve(outputDir, _path2['default'].relative(_optionsJs2['default']['input'], filePathDir)) :
           // --flatten option so do not add relative path
           outputDir;
         } else {
@@ -153,9 +151,9 @@ function transcoder(files) {
         }
 
         // Use relative path from curDir (cwd)
-        usePath = _path2.default.resolve(curDir, usePath);
-        sourceFilePath = _path2.default.relative(curDir, filePathNorm);
-        destFilePath = _path2.default.normalize(usePath + _path2.default.sep + destFileName);
+        usePath = _path2['default'].resolve(curDir, usePath);
+        sourceFilePath = _path2['default'].relative(curDir, filePathNorm);
+        destFilePath = _path2['default'].normalize(usePath + _path2['default'].sep + destFileName);
 
         var nextFile = function nextFile() {
           return processNext(arr);
@@ -173,12 +171,12 @@ function transcoder(files) {
             // Destination file already exists, subtract from totals
             updateProgressTotal(null);
             var e = new Error('File already exists in output directory.');
-            e.type = _options2.default['diff'] ? say.INFO : say.ERROR;
+            e.type = _optionsJs2['default']['diff'] ? say.INFO : say.ERROR;
             e.file = destFilePath;
             throw e;
           }, function (err) {
             updateProgressTotal(sourceFileSize);
-            return (0, _childPromise2.default)('detect-crop', [sourceFilePath], fileName, curDir, !_options2.default['debug']).then(function (res) {
+            return (0, _childPromiseJs2['default'])('detect-crop', [sourceFilePath], fileName, curDir, !_optionsJs2['default']['debug']).then(function (res) {
               var commandLines = res.replace(/\n+$/gm, '');
               var commands = commandLines.split(/\n+/);
               var useCommand = commands[commands.length - 1].trim();
@@ -191,8 +189,8 @@ function transcoder(files) {
             }).then(function (command) {
               var useArgs = (0, _shellQuote.parse)(command);
               useArgs.splice(1, 0, '--output', usePath);
-              if (_options2.default['--'].length) {
-                useArgs.splice.apply(useArgs, [useArgs.length - 1, 0].concat(_options2.default['--']));
+              if (_optionsJs2['default']['--'].length) {
+                useArgs.splice.apply(useArgs, [useArgs.length - 1, 0].concat(_optionsJs2['default']['--']));
               }
               var crop = useArgs.indexOf('--crop') + 1;
               if (crop > 0) {
@@ -205,7 +203,7 @@ function transcoder(files) {
               return useArgs;
             }).then(function (args) {
               say.notify('Starting transcoding operation for file.', say.DEBUG, fileName, args.join(' '));
-              return (0, _childPromise2.default)(args[0], args.slice(1), fileName, curDir, !_options2.default['debug'], function (buff) {
+              return (0, _childPromiseJs2['default'])(args[0], args.slice(1), fileName, curDir, !_optionsJs2['default']['debug'], function (buff) {
                 var quant = handbrakeProgress(buff);
                 if (quant !== null) {
                   currentQuant = quant;
@@ -215,7 +213,7 @@ function transcoder(files) {
               });
             }).then(function (output) {
               // Get total running time
-              if (_options2.default['dry-run']) {
+              if (_optionsJs2['default']['dryRun']) {
                 say.notify('Finished processing file.', say.INFO, destFilePath, output);
               } else {
                 var _ret2 = (function () {
@@ -227,21 +225,21 @@ function transcoder(files) {
                     throw e;
                   }
                   return {
-                    v: (0, _childPromise2.default)('query-handbrake-log', ['time', destFilePath + '.log'], destFileName, curDir, true).then(function (log) {
+                    v: (0, _childPromiseJs2['default'])('query-handbrake-log', ['time', destFilePath + '.log'], destFileName, curDir, true).then(function (log) {
                       var totalTime = log.trim().match(timePattern)[1];
                       say.notify('Total: ' + transcodeStatus[1] + '. Transcoding: ' + totalTime, say.WRITE, destFilePath, output);
                     })
                   };
                 })();
 
-                if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+                if (typeof _ret2 === 'object') return _ret2.v;
               }
             });
-          }).catch(errCatcher).then(nextFile, nextFile)
+          })['catch'](errCatcher).then(nextFile, nextFile)
         };
       })();
 
-      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+      if (typeof _ret === 'object') return _ret.v;
     }
     say.notify.stopProgressTimer();
     progressBar.op(progressBar.total);
@@ -249,5 +247,7 @@ function transcoder(files) {
   }
 
   return processNext(files);
-};
-//# sourceMappingURL=transcoder.js.map
+}
+
+;
+module.exports = exports['default'];

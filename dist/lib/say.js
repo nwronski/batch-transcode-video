@@ -1,13 +1,14 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
-exports.WRITE = exports.DEBUG = exports.ERROR = exports.INFO = undefined;
 exports.log = log;
 exports.notify = notify;
 exports.getSummary = getSummary;
 exports.logSummary = logSummary;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _chalk = require('chalk');
 
@@ -23,12 +24,15 @@ var _promise2 = _interopRequireDefault(_promise);
 
 var _util = require('./util');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var INFO = 'INFO';
+exports.INFO = INFO;
+var ERROR = 'ERROR';
+exports.ERROR = ERROR;
+var DEBUG = 'DEBUG';
+exports.DEBUG = DEBUG;
+var WRITE = 'WRITE';
 
-var INFO = exports.INFO = 'INFO';
-var ERROR = exports.ERROR = 'ERROR';
-var DEBUG = exports.DEBUG = 'DEBUG';
-var WRITE = exports.WRITE = 'WRITE';
+exports.WRITE = WRITE;
 
 function log(obj) {
   var shouldEmit = true;
@@ -39,11 +43,11 @@ function log(obj) {
       headerBg = 'bgGreen';
       break;
     case DEBUG:
-      shouldEmit = _options2.default['debug'];
+      shouldEmit = _options2['default']['debug'];
       headerBg = 'bgBlue';
       break;
     case INFO:
-      shouldEmit = !_options2.default['quiet'];
+      shouldEmit = !_options2['default']['quiet'];
       headerBg = 'bgCyan';
       break;
     case ERROR:
@@ -55,11 +59,11 @@ function log(obj) {
     return false;
   }
   if (obj.message) {
-    var t = _chalk2.default.gray.bold(('0' + obj.time.toLocaleTimeString()).slice(-11) + '  ');
-    var h = _chalk2.default[headerBg].gray.bold(' ' + obj.type.toUpperCase() + ' ');
-    var m = _chalk2.default.white.bold('  ' + obj.message);
+    var t = _chalk2['default'].gray.bold(('0' + obj.time.toLocaleTimeString()).slice(-11) + '  ');
+    var h = _chalk2['default'][headerBg].gray.bold(' ' + obj.type.toUpperCase() + ' ');
+    var m = _chalk2['default'].white.bold('  ' + obj.message);
 
-    console.log(_chalk2.default[fileColor].bold('  -> ' + obj.file));
+    console.log(_chalk2['default'][fileColor].bold('  -> ' + obj.file));
     console.log('    -> ' + t + h + m);
   }
   if (obj.additional) {
@@ -72,7 +76,7 @@ function notify(m, t, f, a) {
   var pkg = m;
   var type = t || ERROR;
   if (m == null || (0, _util.isString)(m)) {
-    var addt = type === ERROR || _options2.default['debug'] ? a : null;
+    var addt = type === ERROR || _options2['default']['debug'] ? a : null;
     pkg = {
       message: m,
       type: type,
@@ -86,6 +90,7 @@ function notify(m, t, f, a) {
   notify._packages.push(pkg);
   return pkg;
 }
+
 notify._packages = [];
 notify._fileCount = 0;
 notify._skipCount = 0;
@@ -104,7 +109,7 @@ function getSummary() {
   var writes = notify._packages.filter(function (p) {
     return p.type === WRITE;
   });
-  var dryRun = _options2.default['dry-run'];
+  var dryRun = _options2['default']['dryRun'];
   return {
     writes: writes,
     errors: errors,
@@ -119,29 +124,29 @@ function getSummary() {
 
 function logSummary(summary) {
   var plur = undefined;
-  console.log(_chalk2.default.white.bold('\n\n- Batch operation summary...'));
+  console.log(_chalk2['default'].white.bold('\n\n- Batch operation summary...'));
 
   if (summary.skipCount > 0) {
     plur = summary.writeCount !== 1 ? 's' : '';
-    console.log(_chalk2.default.cyan.bold('  -> ' + summary.skipCount + ' file' + plur + ' skipped.'));
+    console.log(_chalk2['default'].cyan.bold('  -> ' + summary.skipCount + ' file' + plur + ' skipped.'));
   }
 
   if (summary.writeCount > 0) {
     plur = summary.writeCount !== 1 ? 's' : '';
-    console.log(_chalk2.default.blue.bold('  -> ' + summary.writeCount + ' file' + plur + ' of ' + summary.fileCount + ' total transcoded.'));
-    if (_options2.default['debug']) {
+    console.log(_chalk2['default'].blue.bold('  -> ' + summary.writeCount + ' file' + plur + ' of ' + summary.fileCount + ' total transcoded.'));
+    if (_options2['default']['debug']) {
       summary.writes.forEach(function (p) {
         return log(p);
       });
     }
   } else if (!summary.isDryRun) {
-    console.log(_chalk2.default.yellow.bold('  -> No files created.'));
+    console.log(_chalk2['default'].yellow.bold('  -> No files created.'));
   }
 
   if (summary.errorCount > 0) {
     plur = summary.errorCount !== 1 ? 's' : '';
-    console.log(_chalk2.default.yellow.bold('  -> ' + summary.errorCount + ' file' + plur + ' failed to transcode.'));
-    if (_options2.default['debug']) {
+    console.log(_chalk2['default'].yellow.bold('  -> ' + summary.errorCount + ' file' + plur + ' failed to transcode.'));
+    if (_options2['default']['debug']) {
       summary.errors.forEach(function (p) {
         return log(p);
       });
@@ -149,9 +154,8 @@ function logSummary(summary) {
   }
 
   if (summary.isSuccess) {
-    console.log(_chalk2.default.green.bold('  -> Finished without error.'));
+    console.log(_chalk2['default'].green.bold('  -> Finished without error.'));
   } else {
-    console.log(_chalk2.default.red.bold('  -> Finished with errors.'));
+    console.log(_chalk2['default'].red.bold('  -> Finished with errors.'));
   }
 }
-//# sourceMappingURL=say.js.map
