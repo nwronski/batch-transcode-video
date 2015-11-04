@@ -36,11 +36,12 @@ var _childPromiseJs2 = _interopRequireDefault(_childPromiseJs);
 
 var _shellQuote = require('shell-quote');
 
-// import * as say from './say.js';
+var _utilJs = require('./util.js');
 
 var stat = _bluebird2['default'].promisify(_fs.stat);
 
 var mkdirp = _bluebird2['default'].promisify(_mkdirp3['default']);
+
 var progressPattern = 'Encoding: task';
 var progressPercent = /(\d{1,3}\.\d{1,2})\s*\%/;
 var timePattern = '([0-9]{2}\:[0-9]{2}\:[0-9]{2})';
@@ -76,13 +77,15 @@ var VideoFile = (function () {
   }]);
 
   function VideoFile(filePath, stats, options) {
+    var transcodeOptions = arguments.length <= 3 || arguments[3] === undefined ? [] : arguments[3];
+
     _classCallCheck(this, VideoFile);
 
     this.options = options;
+    this.transcodeOptions = transcodeOptions;
     this.status = VideoFile.QUEUED;
 
     this.lastPercent = 0;
-    this.quant = 0; // TODO: keep this?
 
     this._crop = null;
     this._encode = null;
@@ -162,7 +165,7 @@ var VideoFile = (function () {
       }).then(function (command) {
         var useArgs = (0, _shellQuote.parse)(command);
         useArgs.splice(1, 0, _this2.filePathRel, '--output', _this2.destFileDir);
-        useArgs.splice.apply(useArgs, [useArgs.length - 1, 0].concat(_this2.options['transcodeOptions']));
+        useArgs.splice.apply(useArgs, [useArgs.length - 1, 0].concat(_this2.transcodeOptions));
         var crop = useArgs.indexOf('--crop') + 1;
         if (crop > 0) {
           _this2.cropValue = useArgs[crop];
@@ -192,10 +195,13 @@ var VideoFile = (function () {
         cwd: this.options['curDir'],
         onData: function onData(data) {
           var lastIndex = data.lastIndexOf(progressPattern);
-          if (lastIndex !== -1 && progressPercent.test(data)) {
-            var matches = data.substr(lastIndex).match(progressPercent);
-            this.lastPercent = Number.parseFloat(matches[1]) / 100.0;
-            this.lastTime = Date.now();
+          if (lastIndex !== -1) {
+            var lastData = data.substr(lastIndex);
+            if (progressPercent.test(lastData)) {
+              var matches = lastData.match(progressPercent);
+              _this3.lastPercent = Number.parseFloat(matches[1]) / 100.0;
+              _this3.lastTime = Date.now();
+            }
           }
         }
       });
@@ -208,10 +214,12 @@ var VideoFile = (function () {
           // Check the output from the trasncode to confirm it finished
           var transcodeStatus = output.match(handbrakeFinish);
           if (transcodeStatus === null) {
-            _this3.totalTime = null;
+            _this3.totalEncodeTime = null;
             throw new _transcodeErrorJs2['default']('Transcode probably did not succeed for file.', _this3.destFileName, output);
           } else {
-            _this3.totalTime = transcodeStatus[1];
+            _this3.lastTime = Date.now();
+            _this3.lastPercent = 1.0;
+            _this3.totalEncodeTime = (0, _utilJs.strToMilliseconds)(transcodeStatus[1]);
           }
           return true;
         }
@@ -233,8 +241,8 @@ var VideoFile = (function () {
         cwd: this.options['curDir']
       });
       return this._query.start().then(function (log) {
-        _this4.encodeTime = log.trim().match(timePattern)[1];
-        // say.notify(`Total: ${this.totalTime. Transcoding: ${this.encodeTime}`, say.WRITE, this.destFilePath, output);
+        _this4.encodeTime = (0, _utilJs.strToMilliseconds)(log.trim().match(timePattern)[1]);
+        // say.notify(`Total: ${this.totalTranscodeTime. Transcoding: ${this.encodeTime}`, say.WRITE, this.destFilePath, output);
       });
     }
   }, {
@@ -249,6 +257,26 @@ var VideoFile = (function () {
         _this5.destFileExists = false;
         return mkdirp(_this5.destFileDir, {});
       });
+    }
+  }, {
+    key: 'currentPercent',
+    get: function get() {
+      if (!this.isRunning) {
+        return this.lastPercent;
+      } else if (this.lastPercent <= 0) {
+        return 0;
+      }
+      return this.currentTime / this.totalTime;
+    }
+  }, {
+    key: 'currentTime',
+    get: function get() {
+      return Date.now() - this.startTime;
+    }
+  }, {
+    key: 'totalTime',
+    get: function get() {
+      return (this.lastTime - this.startTime) / this.lastPercent;
     }
   }, {
     key: 'isReady',

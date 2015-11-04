@@ -4,40 +4,25 @@ process.title = 'batch-transcode-video';
 
 'use strict';
 
-var _index = require('../dist/index.js');
-
-var _index2 = _interopRequireDefault(_index);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _minimist = require('minimist');
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
-var _path = require('path');
+var _distLibHelpJs = require('../dist/lib/help.js');
 
-var _path2 = _interopRequireDefault(_path);
+var _distLibHelpJs2 = _interopRequireDefault(_distLibHelpJs);
 
-var _util = require('../dist/lib/util.js');
+var _distIndexCliJs = require('../dist/index-cli.js');
 
-var _chalk = require('chalk');
+var _distIndexCliJs2 = _interopRequireDefault(_distIndexCliJs);
 
-var _chalk2 = _interopRequireDefault(_chalk);
+var _distLibDefaultOptionsJs = require('../dist/lib/default-options.js');
 
-var _help = require('../dist/lib/help.js');
+var _distLibDefaultOptionsJs2 = _interopRequireDefault(_distLibDefaultOptionsJs);
 
-var _help2 = _interopRequireDefault(_help);
-
-var _defaultOptions = require('../dist/lib/default-options.js');
-
-var _defaultOptions2 = _interopRequireDefault(_defaultOptions);
-
-var _say = require('../dist/lib/say.js');
-
-var say = _interopRequireWildcard(_say);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+var UNKNOWN_MESSAGE = 'If you would like to supply custom options to\n transcode-video then put them at end of the command\n after a double dash "--". For example to pass the\n "--dry-run" command to transcode-video:'.replace(/\n+/g, '');
 var defs = {
   '--': true,
   alias: {
@@ -48,62 +33,26 @@ var defs = {
   },
   boolean: ['debug', 'quiet', 'flatten', 'diff', 'help'],
   string: ['input', 'output', 'mask'],
-  default: _defaultOptions2.default,
+  'default': _distLibDefaultOptionsJs2['default'],
   unknown: function unknown(arg) {
-    var errMessage = [];
-    console.log(_chalk2.default.bgRed.gray.bold('ERROR') + _chalk2.default.white.bold('\tUnrecognized command ') + _chalk2.default.yellow.bold(arg) + _chalk2.default.white.bold(' provided.'));
-    errMessage.push('If you would like to supply custom options to');
-    errMessage.push('transcode-video then put them at end of the command');
-    errMessage.push('after a double dash "--". For example to pass the ');
-    errMessage.push('"--dry-run" command to transcode-video:');
-    console.log((0, _util.splitter)(errMessage.join(' '), true, 60));
-    console.log(_chalk2.default.white.bold('batch-transcode-video --input my_videos/ -- --dry-run'));
+    console.log('ERROR:\tUnrecognized argument ' + arg + ' provided.');
+    console.log(UNKNOWN_MESSAGE);
+    console.log('\nbatch-transcode-video --input my_videos/ -- --dry-run');
     process.exit(1);
   }
 };
-var options = (0, _minimist2.default)(process.argv.slice(2), defs);
-options['transcodeOptions'] = [];
-if (options['--'].length) {
-  options['transcodeOptions'] = options['--'];
-  delete options['--'];
-}
-options['curDir'] = process.cwd();
-options['input'] = _path2.default.resolve(options['curDir'], options['input']);
-options['dryRun'] = options['transcodeOptions'].length ? options['transcodeOptions'].reduce(function (prev, cur) {
-  return prev || /^\-\-dry\-run$/i.test(cur.trim());
-}, false) : false;
-var destExtensionRegex = /^\-{2}(mp4|m4v)$/i;
-options['destExt'] = options['transcodeOptions'].reduce(function (prev, cur) {
-  var curArg = cur.trim();
-  if (destExtensionRegex.test(curArg)) {
-    return curArg.match(destExtensionRegex)[1];
-  }
-  return prev;
-}, 'mkv');
+
+var options = (0, _minimist2['default'])(process.argv.slice(2), defs);
 
 if (options['help']) {
-  console.log((0, _help2.default)());
+  console.log((0, _distLibHelpJs2['default'])());
   process.exit(0);
 }
 
-// process.on('exit', function () {
-//   let summary = say.getSummary();
-//   say.logSummary(summary);
-//   if (!summary.isSuccess) {
-//     process.reallyExit(1);
-//   }
-// });
+var transcodeOptions = [];
+if (options['--'].length) {
+  transcodeOptions = options['--'].slice(0);
+  delete options['--'];
+}
 
-var filePattern = _path2.default.normalize(options['input'] + _path2.default.sep + options['mask']);
-console.log(_chalk2.default.white.bold('- Starting batch operation...'));
-// say.notify('Scanning for media using search pattern.', say.DEBUG, filePattern);
-
-var batch = new _index2.default(filePattern, options);
-
-batch.transcodeAll().then(function () {
-  console.log("done");
-  process.exit(0);
-}).catch(function (err) {
-  console.log(err);
-  process.exit(0);
-});
+new _distIndexCliJs2['default'](options, transcodeOptions).cli();

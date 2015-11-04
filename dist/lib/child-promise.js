@@ -1,4 +1,3 @@
-// import * as say from './say.js';
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

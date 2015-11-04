@@ -8,7 +8,7 @@ module.exports = function (grunt) {
         banner: "#!/usr/bin/env node\n\nprocess.title = 'batch-transcode-video';\n\n",
       },
       bin: {
-        src: ['.tmp/index.js'],
+        src: ['.tmp/batch-transcode-video.js'],
         dest: 'bin/batch-transcode-video',
       },
     },
@@ -19,26 +19,26 @@ module.exports = function (grunt) {
       dist: {
         files: [{
           expand: true,
-          src: ['index.js', 'lib/**/*.js'],
+          src: ['index.js', 'index-cli.js', 'lib/**/*.js'],
           dest: 'dist/'
         }]
       },
       bin: {
         files: {
-          '.tmp/index.js': 'index-standalone.js'
+          '.tmp/batch-transcode-video.js': 'batch-transcode-video.js'
         }
       }
     },
     watch: {
       dist: {
-        files: ['index.js', 'lib/**/*.js'],
+        files: ['index.js', 'index-cli.js', 'lib/**/*.js'],
         tasks: ['babel:dist'],
         options: {
           spawn: false
         }
       },
       standalone: {
-        files: ['index-standalone.js'],
+        files: ['batch-transcode-video.js'],
         tasks: ['babel:bin', 'concat:bin'],
         options: {
           spawn: false
@@ -54,5 +54,5 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('default', ['babel']);
+  grunt.registerTask('default', ['babel', 'concat']);
 };

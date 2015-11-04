@@ -1,10 +1,15 @@
 import Promise from 'bluebird';
+import path from 'path';
 import _glob from 'glob';
 let glob = Promise.promisify(_glob);
 import {stat as _stat} from 'fs';
 let stat = Promise.promisify(_stat);
 import TranscodeError from './lib/transcode-error.js';
 import VideoFile from './lib/video-file.js';
+import defaultOptions from './lib/default-options.js';
+
+let destExtensionRegex = /^\-{2}(mp4|m4v)$/i;
+let dryRunRegex = /^\-\-dry\-run$/i;
 
 export default class BatchTranscodeVideo {
   static get INACTIVE() { return 0; }
@@ -12,11 +17,25 @@ export default class BatchTranscodeVideo {
   static get FINISHED() { return 2; }
   static get ERRORED() { return 3; }
 
-  constructor(filePattern, options) {
-    this.filePattern = filePattern;
-    this.options = options;
+  constructor(options, transcodeOptions) {
+    options['curDir'] = process.cwd();
+    options['input'] = path.relative(options['curDir'], options['input']);
+    options['dryRun'] = transcodeOptions.length ? transcodeOptions.reduce(function (prev, cur) {
+      return prev || dryRunRegex.test(cur.trim());
+    }, false) : false;
+    options['destExt'] = transcodeOptions.reduce(function (prev, cur) {
+      let curArg = cur.trim();
+      if (destExtensionRegex.test(curArg)) {
+        return curArg.match(destExtensionRegex)[1];
+      }
+      return prev;
+    }, 'mkv');
+    this.filePattern = path.normalize(options['input'] + path.sep + options['mask']);
+    this.options = Object.assign({}, defaultOptions, options);
+    this.transcodeOptions = transcodeOptions.slice(0);
     this.status = BatchTranscodeVideo.INACTIVE;
-    this.files = new Set();
+    this.files = [];
+    this.currentIndex = 0;
     this._ready = this.createEntries();
     return this;
   }
@@ -34,25 +53,33 @@ export default class BatchTranscodeVideo {
     .map((file) => this.resolvePath(file), {
       concurrency: 3
     })
-    .map((entry) => {
-      this.files.add(entry);
-    })
-    .then(() => this.files);
+    .then((files) => {
+      this.files = files;
+      return this.files;
+    });
   }
 
   transcodeAll() {
     return this._ready
     .then(() => {
+      if (!this.isReady) {
+        throw new TranscodeError('Batch has already been processed.', this.filePattern);
+      }
+      this.startTime = Date.now();
+      this.lastTime = this.startTime;
       this.status = BatchTranscodeVideo.RUNNING;
       return this.files;
     })
-    .mapSeries((video) => {
-      this.currentFile = video;
-      return this.currentFile.transcode();
+    .mapSeries((video, index) => {
+      this.lastTime = this.startTime;
+      this.currentIndex = index;
+      return video.transcode();
     })
     .then(() => {
+      this.lastTime = Date.now();
+      this.stopTime = this.lastTime;
       this.status = BatchTranscodeVideo.FINISHED;
-      this.currentFile = null;
+      this.currentIndex = -1;
     })
     .catch((err) => {
       this.status = BatchTranscodeVideo.ERRORED;
@@ -63,20 +90,123 @@ export default class BatchTranscodeVideo {
   resolvePath(filePath) {
     return stat(filePath)
     .then((stats) => {
-      return new VideoFile(filePath, stats, this.options);
+      return new VideoFile(filePath, stats, this.options, this.transcodeOptions);
     });
+  }
+
+  get processedFileSizes() {
+    return this.files
+    .slice(0, this.currentIndex + 1)
+    .reduce(function (total, file) {
+      let size = 0;
+      switch (file.status) {
+        case 0: // QUEUED
+          break;
+        case 1: // RUNNING
+          size = file.size * file.currentPercent;
+          break;
+        case 2: // WRITTEN
+          size = file.size;
+          break;
+        case 3: // ERRORED
+          size = file.size * file.currentPercent;
+          break;
+        case 4: // SKIPPED
+        default:
+          break;
+      }
+      return total + size;
+    }, 0);
+  }
+
+  get totalFileSizes() {
+    return this.files.reduce(function (total, file) {
+      let size = 0;
+      switch (file.status) {
+        case 0: // QUEUED
+        case 1: // RUNNING
+        case 2: // WRITTEN
+          size = file.size;
+          break;
+        case 3: // ERRORED
+          size = file.size * file.lastPercent;
+          break;
+        case 4: // SKIPPED
+        default:
+          break;
+      }
+      return total + size;
+    }, 0);
+  }
+
+  get currentPercent() {
+    return this.processedFileSizes / this.totalFileSizes;
+  }
+
+  // get currentPercent() {
+  //   if (!this.isRunning) {
+  //     return this.lastPercent;
+  //   } else if (this.lastPercent <= 0) {
+  //     return null;
+  //   }
+  //   let curProgress = this.currentFile.currentPercent;
+  //   if (curProgress === null) {
+  //     curProgress = 0;
+  //   }
+  //   let curFileSize = this.currentFile.size;
+  //   let curFilePercent = ((curProgress * curFileSize) / this.totalFileSizes);
+  //   return this.lastPercent + curFilePercent;
+  // }
+
+  get currentTime() {
+    return Date.now() - this.startTime;
+  }
+
+  get totalTime() {
+    return this.currentTime / this.currentPercent;
+  }
+
+  // get totalTime() {
+  //   return (this.lastTime - this.startTime) / this.lastPercent;
+  // }
+
+  // get lastFileSizes() {
+  //   return this.files.slice(0, this.currentIndex).reduce(smartSum, 0);
+  // }
+
+  // get lastPercent() {
+  //   if (this.isReady) {
+  //     return 0.0;
+  //   } else if (this.currentIndex === -1) {
+  //     return 1.0;
+  //   }
+  //   return this.lastFileSizes / this.totalFileSizes;
+  // }
+
+  get isReady() {
+    return this.status === BatchTranscodeVideo.INACTIVE;
+  }
+
+  get isRunning() {
+    return this.status === BatchTranscodeVideo.RUNNING;
+  }
+
+  get isFinished() {
+    return this.isSuccess || this.status === BatchTranscodeVideo.ERRORED;
+  }
+
+  get isSuccess() {
+    return this.status === BatchTranscodeVideo.FINISHED;
   }
 
   get ready() {
     return this._ready;
   }
 
-  // get currentFile() {
-  //   for (let video of this.files) {
-  //     if (video.isRunning) {
-  //       return video;
-  //     }
-  //   }
-  //   return null;
-  // }
+  get currentFile() {
+    if (this.currentIndex >= 0) {
+      return this.files[this.currentIndex];
+    }
+    return null;
+  }
 };

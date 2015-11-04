@@ -35,7 +35,7 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.0.5",
-    "chalk": "^1.1.1",
+    "charm": "^1.0.0",
     "glob": "^5.0.15",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
