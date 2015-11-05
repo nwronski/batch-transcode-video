@@ -11,6 +11,9 @@ exports.isString = isString;
 exports.type = type;
 exports.strToMilliseconds = strToMilliseconds;
 exports.millisecondsToStr = millisecondsToStr;
+exports.fractionToPercent = fractionToPercent;
+exports.isANumber = isANumber;
+exports.padTo = padTo;
 exports.splitter = splitter;
 
 function isFunction(obj) {
@@ -48,8 +51,45 @@ function strToMilliseconds(strTime) {
 ;
 
 function millisecondsToStr(ms) {
-  ms /= 1000;
-  return [('0' + Math.floor(ms / Math.pow(60, 3))).slice(-2), ('0' + Math.floor(ms % Math.pow(60, 3) / Math.pow(60, 2))).slice(-2), ('0' + Math.round(ms % Math.pow(60, 2) / 60)).slice(-2)].join(':');
+  var parts = [0, 0, 0];
+  if (isANumber(ms)) {
+    ms /= 1000;
+    parts = [Math.floor(ms / Math.pow(60, 2)), Math.floor(ms % Math.pow(60, 2) / 60), Math.round(ms % 60)];
+  }
+  return parts.map(function (p) {
+    return padTo(p.toString());
+  }).join(':');
+}
+
+;
+
+function fractionToPercent(frac) {
+  var min = 0.0;
+  var max = 100.0;
+
+  var percent = isANumber(frac) ? Math.max(Math.min(max * frac, max), min) : min;
+  return padTo(percent.toPrecision(5), '0', 6, 0);
+}
+
+;
+
+function isANumber(num) {
+  return !Number.isNaN(parseFloat(num)) && isFinite(num);
+}
+
+;
+
+// dir: 0 = right, 1 = left
+
+function padTo(str) {
+  var char = arguments.length <= 1 || arguments[1] === undefined ? '0' : arguments[1];
+  var count = arguments.length <= 2 || arguments[2] === undefined ? 2 : arguments[2];
+  var dir = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+
+  var right = dir === 0;
+  var pad = char.repeat(count);
+  var chars = right ? '' + str + pad : '' + pad + str;
+  return right ? chars.slice(0, count) : chars.slice(-1 * count);
 }
 
 ;
