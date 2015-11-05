@@ -31,6 +31,13 @@ var _libUtilJs = require('./lib/util.js');
 var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   _inherits(CliBatchTranscodeVideo, _BatchTranscodeVideo);
 
+  _createClass(CliBatchTranscodeVideo, null, [{
+    key: 'INTERVAL_MS',
+    get: function get() {
+      return 1000;
+    }
+  }]);
+
   function CliBatchTranscodeVideo(options, transcodeOptions) {
     _classCallCheck(this, CliBatchTranscodeVideo);
 
@@ -59,13 +66,15 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   }, {
     key: 'startProgress',
     value: function startProgress() {
+      var _this2 = this;
+
       this.charm.write('Starting batch operation...\n\n');
 
       this.write();
       this.progress = setInterval(function () {
-        // this.clear();
-        // this.write();
-      }, 1000);
+        _this2.clear();
+        _this2.write();
+      }, CliBatchTranscodeVideo.INTERVAL_MS);
       return _bluebird2['default'].resolve(true);
     }
   }, {
@@ -80,18 +89,18 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   }, {
     key: 'printSummary',
     value: function printSummary() {
-      console.log("WE DONE");
+      this.charm.write('\n\nFinished processing.');
       return true;
     }
   }, {
     key: 'finish',
     value: function finish() {
-      var _this2 = this;
+      var _this3 = this;
 
       return this.stopProgress().then(function () {
-        return _this2.printSummary();
+        return _this3.printSummary();
       }).then(function () {
-        if (!_this2.isSuccess) {
+        if (!_this3.isSuccess) {
           process.reallyExit(1);
         }
       });
@@ -99,7 +108,7 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   }, {
     key: 'write',
     value: function write() {
-      var currentFile = '(Please wait...)';
+      var currentFile = '(Spinning up, please wait...)';
       var totalProg = 0,
           totalCTime = 0,
           totalTTime = 0;
@@ -107,20 +116,20 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
           fileCTime = 0,
           fileTTime = 0;
       if (this.isRunning) {
-        var _currentFile = this.currentFile.fileName;
-        var _totalProg = this.currentPercent;
-        var _totalCTime = (0, _libUtilJs.millisecondsToStr)(this.currentTime);
-        var _totalTTime = (0, _libUtilJs.millisecondsToStr)(this.totalTime);
-        var _fileProg = this.currentFile.currentPercent;
-        var _fileCTime = (0, _libUtilJs.millisecondsToStr)(this.currentFile.currentTime);
-        var _fileTTime = (0, _libUtilJs.millisecondsToStr)(this.currentFile.totalTime);
+        currentFile = this.currentFile.fileName;
+        totalProg = this.currentPercent;
+        totalCTime = this.currentTime;
+        totalTTime = this.remainingTime;
+        fileProg = this.currentFile.currentPercent;
+        fileCTime = this.currentFile.currentTime;
+        fileTTime = this.currentFile.remainingTime;
       }
-      this.charm.write('Current: ' + currentFile + '\n').write('\t' + fileProg + '%\tElapsed: ' + (0, _libUtilJs.millisecondsToStr)(fileCTime) + '\tRemaining: ' + (0, _libUtilJs.millisecondsToStr)(fileTTime) + '\n').write('\t' + totalProg + '%\tElapsed: ' + (0, _libUtilJs.millisecondsToStr)(totalCTime) + '\tRemaining: ' + (0, _libUtilJs.millisecondsToStr)(totalTTime));
+      this.charm.write('Current: ' + currentFile + '\n').write('\t' + (0, _libUtilJs.fractionToPercent)(fileProg) + '%\t\tElapsed: ' + (0, _libUtilJs.millisecondsToStr)(fileCTime) + '\tRemaining: ' + (0, _libUtilJs.millisecondsToStr)(fileTTime) + '\n').write('\t' + (0, _libUtilJs.fractionToPercent)(totalProg) + '%\t\tElapsed: ' + (0, _libUtilJs.millisecondsToStr)(totalCTime) + '\tRemaining: ' + (0, _libUtilJs.millisecondsToStr)(totalTTime) + '\n\n');
     }
   }, {
     key: 'clear',
     value: function clear() {
-      // this.charm.up(2).erase('line').erase('down').write("\r");
+      this.charm.up(4).erase('line').erase('down').write("\r");
     }
   }, {
     key: 'onSuccess',
