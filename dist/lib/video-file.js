@@ -141,7 +141,7 @@ var VideoFile = (function () {
         }
       })['catch'](function (e) {
         _this.error = e;
-        _this.status = VideoFile.ERRORED;
+        _this.status = _this.isRunning ? VideoFile.ERRORED : _this.status;
         console.log(_this.error.toString());
       });
     }
@@ -279,6 +279,11 @@ var VideoFile = (function () {
       return (this.lastTime - this.startTime) / this.lastPercent;
     }
   }, {
+    key: 'remainingTime',
+    get: function get() {
+      return this.totalTime - this.currentTime;
+    }
+  }, {
     key: 'isReady',
     get: function get() {
       return this.status === VideoFile.QUEUED;
@@ -289,9 +294,24 @@ var VideoFile = (function () {
       return this.status === VideoFile.RUNNING;
     }
   }, {
+    key: 'isSkipped',
+    get: function get() {
+      return this.status === VideoFile.SKIPPED;
+    }
+  }, {
+    key: 'isWritten',
+    get: function get() {
+      return this.status === VideoFile.WRITTEN;
+    }
+  }, {
+    key: 'isErrored',
+    get: function get() {
+      return this.status === VideoFile.ERRORED;
+    }
+  }, {
     key: 'isFinished',
     get: function get() {
-      return this.status === VideoFile.WRITTEN || this.status === VideoFile.ERRORED || this.status === VideoFile.SKIPPED;
+      return this.isWritten || this.isErrored || this.isSkipped;
     }
   }]);
 
@@ -300,93 +320,4 @@ var VideoFile = (function () {
 
 exports['default'] = VideoFile;
 ;
-
-/*
-import chalk from 'chalk';
-import options from './options.js';
-import path from 'path';
-import {resolve, denodeify} from 'promise';
-import _mkdirp from 'mkdirp';
-let mkdirp = denodeify(_mkdirp);
-import {stat as _stat} from 'fs';
-let stat = denodeify(_stat);
-import childPromise from './child-promise.js';
-import {parse} from 'shell-quote';
-import * as say from './say.js';
-import pace from 'pace';
-let curDir = process.cwd();
-
-
-
-function handbrakeProgress(str) {
-  let quant;
-  let lastIndex = str.lastIndexOf(progressPattern);
-  if (lastIndex !== -1 && progressPercent.test(str)) {
-    let matches = str.substr(lastIndex).match(progressPercent);
-    quant = Number.parseFloat(matches[1]) / 100.0;
-  }
-  return quant;
-}
-
-function getErrorHandler(file) {
-  return function (err) {
-    err.file = err.file || file;
-    say.notify(err);
-  };
-}
-
-export default function transcoder(files) {
-  let unknownSizes  = say.notify._fileCount;
-  // TODO: get progress bar to render at 0%
-  let progressBar   = pace({total: Math.max(unknownSizes * 100, 100)});
-  let fileSizes     = [];
-  let knownSizes    = (frac = 1.0) => (fileSizes.length ? Number.parseInt(fileSizes[0] * frac, 10) : 0) + fileSizes.slice(1).reduce((p, c) => p + c, 0);
-  let currentQuant  = 0;
-  let startTime = Date.now();
-  let lastTime = startTime;
-
-  let updateProgress = function updateProgress(f) {
-    progressBar.op(Math.min(knownSizes(f), progressBar.total));
-  };
-
-  let progressTimer = setInterval(function timingFunction() {
-    if (currentQuant > 0) {
-      let currentTime = Date.now();
-      let totalTime = (lastTime - startTime) / currentQuant;
-      let elapsedSinceLast = (currentTime - startTime) / totalTime;
-      updateProgress(Math.max(Math.min(elapsedSinceLast, 1.0), 0));
-    } else {
-      progressBar.op(Math.min(progressBar.current + (progressBar.total * 0.005), progressBar.total));
-    }
-  }, 1000);
-
-  progressBar.op(1);
-
-  let updateProgressTotal = function updateProgressTotal(size) {
-    if (Number.isInteger(size)) {
-      let sizeNorm = Number.parseInt(size / 1000000.0, 10);
-      fileSizes.unshift(sizeNorm);
-    } else {
-      say.notify._fileCount -= 1;
-      say.notify._skipCount += 1;
-    }
-    unknownSizes -= 1;
-    let adjTotal = knownSizes();
-    let avgSize = Number.parseInt(adjTotal / fileSizes.length, 10);
-    adjTotal += avgSize * unknownSizes;
-    progressBar.total = adjTotal;
-    return adjTotal;
-  };
-
-  function processNext(arr) {
-    if (arr.length) {
-      dothing()
-    }
-    say.notify.stopProgressTimer();
-    progressBar.op(progressBar.total);
-    return resolve(true);
-  }
-
-  return processNext(files);
-  */
 module.exports = exports['default'];

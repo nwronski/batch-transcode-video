@@ -151,52 +151,21 @@ var BatchTranscodeVideo = (function () {
   }, {
     key: 'processedFileSizes',
     get: function get() {
-      return this.files.slice(0, this.currentIndex + 1).reduce(function (total, file) {
-        var size = 0;
-        switch (file.status) {
-          case 0:
-            // QUEUED
-            break;
-          case 1:
-            // RUNNING
-            size = file.size * file.currentPercent;
-            break;
-          case 2:
-            // WRITTEN
-            size = file.size;
-            break;
-          case 3:
-            // ERRORED
-            size = file.size * file.currentPercent;
-            break;
-          case 4: // SKIPPED
-          default:
-            break;
-        }
-        return total + size;
+      return this.files.reduce(function (total, file) {
+        return total + file.currentPercent * file.fileSize;
       }, 0);
     }
   }, {
     key: 'totalFileSizes',
     get: function get() {
       return this.files.reduce(function (total, file) {
-        var size = 0;
-        switch (file.status) {
-          case 0: // QUEUED
-          case 1: // RUNNING
-          case 2:
-            // WRITTEN
-            size = file.size;
-            break;
-          case 3:
-            // ERRORED
-            size = file.size * file.lastPercent;
-            break;
-          case 4: // SKIPPED
-          default:
-            break;
+        var useSize = file.fileSize;
+        if (file.isErrored) {
+          useSize *= file.currentPercent;
+        } else if (file.isSkipped) {
+          useSize = 0;
         }
-        return total + size;
+        return total + useSize;
       }, 0);
     }
   }, {
@@ -204,22 +173,6 @@ var BatchTranscodeVideo = (function () {
     get: function get() {
       return this.processedFileSizes / this.totalFileSizes;
     }
-
-    // get currentPercent() {
-    //   if (!this.isRunning) {
-    //     return this.lastPercent;
-    //   } else if (this.lastPercent <= 0) {
-    //     return null;
-    //   }
-    //   let curProgress = this.currentFile.currentPercent;
-    //   if (curProgress === null) {
-    //     curProgress = 0;
-    //   }
-    //   let curFileSize = this.currentFile.size;
-    //   let curFilePercent = ((curProgress * curFileSize) / this.totalFileSizes);
-    //   return this.lastPercent + curFilePercent;
-    // }
-
   }, {
     key: 'currentTime',
     get: function get() {
@@ -230,24 +183,11 @@ var BatchTranscodeVideo = (function () {
     get: function get() {
       return this.currentTime / this.currentPercent;
     }
-
-    // get totalTime() {
-    //   return (this.lastTime - this.startTime) / this.lastPercent;
-    // }
-
-    // get lastFileSizes() {
-    //   return this.files.slice(0, this.currentIndex).reduce(smartSum, 0);
-    // }
-
-    // get lastPercent() {
-    //   if (this.isReady) {
-    //     return 0.0;
-    //   } else if (this.currentIndex === -1) {
-    //     return 1.0;
-    //   }
-    //   return this.lastFileSizes / this.totalFileSizes;
-    // }
-
+  }, {
+    key: 'remainingTime',
+    get: function get() {
+      return this.totalTime - this.currentTime;
+    }
   }, {
     key: 'isReady',
     get: function get() {
@@ -261,12 +201,17 @@ var BatchTranscodeVideo = (function () {
   }, {
     key: 'isFinished',
     get: function get() {
-      return this.isSuccess || this.status === BatchTranscodeVideo.ERRORED;
+      return this.isSuccess || this.isErrored;
     }
   }, {
     key: 'isSuccess',
     get: function get() {
       return this.status === BatchTranscodeVideo.FINISHED;
+    }
+  }, {
+    key: 'isErrored',
+    get: function get() {
+      return this.status === BatchTranscodeVideo.ERRORED;
     }
   }, {
     key: 'ready',

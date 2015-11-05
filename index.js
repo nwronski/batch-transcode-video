@@ -96,67 +96,27 @@ export default class BatchTranscodeVideo {
 
   get processedFileSizes() {
     return this.files
-    .slice(0, this.currentIndex + 1)
     .reduce(function (total, file) {
-      let size = 0;
-      switch (file.status) {
-        case 0: // QUEUED
-          break;
-        case 1: // RUNNING
-          size = file.size * file.currentPercent;
-          break;
-        case 2: // WRITTEN
-          size = file.size;
-          break;
-        case 3: // ERRORED
-          size = file.size * file.currentPercent;
-          break;
-        case 4: // SKIPPED
-        default:
-          break;
-      }
-      return total + size;
+      return total + (file.currentPercent * file.fileSize);
     }, 0);
   }
 
   get totalFileSizes() {
-    return this.files.reduce(function (total, file) {
-      let size = 0;
-      switch (file.status) {
-        case 0: // QUEUED
-        case 1: // RUNNING
-        case 2: // WRITTEN
-          size = file.size;
-          break;
-        case 3: // ERRORED
-          size = file.size * file.lastPercent;
-          break;
-        case 4: // SKIPPED
-        default:
-          break;
+    return this.files
+    .reduce(function (total, file) {
+      let useSize = file.fileSize;
+      if (file.isErrored) {
+        useSize *= file.currentPercent;
+      } else if (file.isSkipped) {
+        useSize = 0;
       }
-      return total + size;
+      return total + useSize;
     }, 0);
   }
 
   get currentPercent() {
     return this.processedFileSizes / this.totalFileSizes;
   }
-
-  // get currentPercent() {
-  //   if (!this.isRunning) {
-  //     return this.lastPercent;
-  //   } else if (this.lastPercent <= 0) {
-  //     return null;
-  //   }
-  //   let curProgress = this.currentFile.currentPercent;
-  //   if (curProgress === null) {
-  //     curProgress = 0;
-  //   }
-  //   let curFileSize = this.currentFile.size;
-  //   let curFilePercent = ((curProgress * curFileSize) / this.totalFileSizes);
-  //   return this.lastPercent + curFilePercent;
-  // }
 
   get currentTime() {
     return Date.now() - this.startTime;
@@ -166,22 +126,9 @@ export default class BatchTranscodeVideo {
     return this.currentTime / this.currentPercent;
   }
 
-  // get totalTime() {
-  //   return (this.lastTime - this.startTime) / this.lastPercent;
-  // }
-
-  // get lastFileSizes() {
-  //   return this.files.slice(0, this.currentIndex).reduce(smartSum, 0);
-  // }
-
-  // get lastPercent() {
-  //   if (this.isReady) {
-  //     return 0.0;
-  //   } else if (this.currentIndex === -1) {
-  //     return 1.0;
-  //   }
-  //   return this.lastFileSizes / this.totalFileSizes;
-  // }
+  get remainingTime() {
+    return this.totalTime - this.currentTime;
+  }
 
   get isReady() {
     return this.status === BatchTranscodeVideo.INACTIVE;
@@ -192,11 +139,15 @@ export default class BatchTranscodeVideo {
   }
 
   get isFinished() {
-    return this.isSuccess || this.status === BatchTranscodeVideo.ERRORED;
+    return this.isSuccess || this.isErrored;
   }
 
   get isSuccess() {
     return this.status === BatchTranscodeVideo.FINISHED;
+  }
+
+  get isErrored() {
+    return this.status === BatchTranscodeVideo.ERRORED;
   }
 
   get ready() {
