@@ -74,7 +74,7 @@ function fractionToPercent(frac) {
 ;
 
 function isANumber(num) {
-  return !Number.isNaN(parseFloat(num)) && isFinite(num);
+  return !Number.isNaN(Number.parseFloat(num)) && isFinite(num);
 }
 
 ;
