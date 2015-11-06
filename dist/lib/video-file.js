@@ -78,9 +78,13 @@ var VideoFile = (function () {
 
   function VideoFile(filePath, stats, options) {
     var transcodeOptions = arguments.length <= 3 || arguments[3] === undefined ? [] : arguments[3];
+    var estimator = arguments.length <= 4 || arguments[4] === undefined ? function () {
+      return null;
+    } : arguments[4];
 
     _classCallCheck(this, VideoFile);
 
+    this.getEstSpeed = estimator;
     this.options = options;
     this.transcodeOptions = transcodeOptions;
     this.status = VideoFile.QUEUED;
@@ -264,7 +268,13 @@ var VideoFile = (function () {
       if (!this.isRunning) {
         return this.lastPercent;
       } else if (this.lastPercent <= 0) {
-        return 0;
+        // Determine whether we should guess
+        var est = this.getEstSpeed();
+        if (est !== null && this.isRunning) {
+          return this.currentTime / est / this.fileSize;
+        } else {
+          return 0;
+        }
       }
       return this.currentTime / this.totalTime;
     }

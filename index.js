@@ -11,6 +11,12 @@ import defaultOptions from './lib/default-options.js';
 let destExtensionRegex = /^\-{2}(mp4|m4v)$/i;
 let dryRunRegex = /^\-\-dry\-run$/i;
 
+function sumFileSizes(files, useProperty = 'currentPercent') {
+  return files.reduce(function (total, file) {
+    return total + (file[useProperty] * file.fileSize);
+  }, 0);
+}
+
 export default class BatchTranscodeVideo {
   static get INACTIVE() { return 0; }
   static get RUNNING() { return 1; }
@@ -71,7 +77,7 @@ export default class BatchTranscodeVideo {
       return this.files;
     })
     .mapSeries((video, index) => {
-      this.lastTime = this.startTime;
+      this.lastTime = Date.now();
       this.currentIndex = index;
       return video.transcode();
     })
@@ -90,15 +96,21 @@ export default class BatchTranscodeVideo {
   resolvePath(filePath) {
     return stat(filePath)
     .then((stats) => {
-      return new VideoFile(filePath, stats, this.options, this.transcodeOptions);
+      return new VideoFile(filePath, stats, this.options, this.transcodeOptions, () => this.estimateSpeed());
     });
   }
 
+  estimateSpeed() {
+    let processed = sumFileSizes(this.files.slice(0, this.currentIndex), 'lastPercent');
+    if (processed > 0) {
+      // ms/MB
+      return (this.lastTime - this.startTime) / processed;
+    }
+    return null;
+  }
+
   get processedFileSizes() {
-    return this.files
-    .reduce(function (total, file) {
-      return total + (file.currentPercent * file.fileSize);
-    }, 0);
+    return sumFileSizes(this.files);
   }
 
   get totalFileSizes() {

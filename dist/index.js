@@ -43,6 +43,14 @@ var stat = _bluebird2['default'].promisify(_fs.stat);
 var destExtensionRegex = /^\-{2}(mp4|m4v)$/i;
 var dryRunRegex = /^\-\-dry\-run$/i;
 
+function sumFileSizes(files) {
+  var useProperty = arguments.length <= 1 || arguments[1] === undefined ? 'currentPercent' : arguments[1];
+
+  return files.reduce(function (total, file) {
+    return total + file[useProperty] * file.fileSize;
+  }, 0);
+}
+
 var BatchTranscodeVideo = (function () {
   _createClass(BatchTranscodeVideo, null, [{
     key: 'INACTIVE',
@@ -126,7 +134,7 @@ var BatchTranscodeVideo = (function () {
         _this2.status = BatchTranscodeVideo.RUNNING;
         return _this2.files;
       }).mapSeries(function (video, index) {
-        _this2.lastTime = _this2.startTime;
+        _this2.lastTime = Date.now();
         _this2.currentIndex = index;
         return video.transcode();
       }).then(function () {
@@ -145,15 +153,25 @@ var BatchTranscodeVideo = (function () {
       var _this3 = this;
 
       return stat(filePath).then(function (stats) {
-        return new _libVideoFileJs2['default'](filePath, stats, _this3.options, _this3.transcodeOptions);
+        return new _libVideoFileJs2['default'](filePath, stats, _this3.options, _this3.transcodeOptions, function () {
+          return _this3.estimateSpeed();
+        });
       });
+    }
+  }, {
+    key: 'estimateSpeed',
+    value: function estimateSpeed() {
+      var processed = sumFileSizes(this.files.slice(0, this.currentIndex), 'lastPercent');
+      if (processed > 0) {
+        // ms/MB
+        return (this.lastTime - this.startTime) / processed;
+      }
+      return null;
     }
   }, {
     key: 'processedFileSizes',
     get: function get() {
-      return this.files.reduce(function (total, file) {
-        return total + file.currentPercent * file.fileSize;
-      }, 0);
+      return sumFileSizes(this.files);
     }
   }, {
     key: 'totalFileSizes',
