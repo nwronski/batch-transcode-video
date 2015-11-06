@@ -5,6 +5,7 @@ import {millisecondsToStr as ms2Str, fractionToPercent as f2Percent} from './lib
 
 export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
   static get INTERVAL_MS() { return 1000; }
+  static get FIRST_TAB() { return 10; }
   constructor(options, transcodeOptions) {
     super(options, transcodeOptions);
     this.timer = null;
@@ -40,6 +41,8 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
 
   state() {
     try {
+      let processed = this.processedFileSizes;
+      let remaining = this.totalFileSizes.toFixed(2);
       return {
         current: {
           file: this.currentFile.fileName,
@@ -50,13 +53,14 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
         total: {
           percent: this.currentPercent,
           elapsed: this.currentTime,
-          remaining: this.remainingTime
+          remaining: this.remainingTime,
+          status: `${processed > 0 ? processed.toFixed(2) : '(estimating)'} MB of ${remaining} MB`
         }
       };
     } catch (e) {
       return {
         current: {
-          file: '[Calculating remaining time, please wait...]',
+          file: `[Scanning ${this.files.length} files...]`,
           percent: 0,
           elapsed: 0,
           remaining: 0
@@ -64,7 +68,8 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
         total: {
           percent: 0,
           elapsed: 0,
-          remaining: 0
+          remaining: 0,
+          status: '[Calculating remaining time...]'
         }
       };
     }
@@ -86,33 +91,66 @@ class Progress {
 
   start() {
     this.charm
+    .display('reset')
     .write('Starting batch operation...\n\n');
   }
 
   finish() {
     this.charm
-    .write('\n\nFinished processing.');
+    .display('reset')
+    .write('\nFinished processing.\n\n');
   }
 
   write(state) {
     let cur = state.current;
     let total = state.total;
-    this.bar(cur.percent);
-    this.charm
-    .display('reset')
-    // TODO: Add ellipsis to file name over certain size
-    .write(`\tFile: ${cur.file}\n`)
-    .write(`Current\t${f2Percent(cur.percent)}%\t\tElapsed: ${ms2Str(cur.elapsed)}\tRemaining: ${ms2Str(cur.remaining)}\n`)
-    .write(`Total\t${f2Percent(total.percent)}%\t\tElapsed: ${ms2Str(total.elapsed)}\tRemaining: ${ms2Str(total.remaining)}\n\n`);
+    this.bar(`Current`, cur.percent);
+    this.truncatedLine('File', cur.file, `Left: ${ms2Str(cur.remaining)}`);
+    // this.statusLine({label: 'Current', elapsed: cur.elapsed, remaining: cur.remaining});
+    this.charm.write(`\n`);
+    this.bar(`Total`, total.percent);
+    // this.statusLine({label: 'Total', elapsed: total.elapsed, remaining: total.remaining});
+    this.truncatedLine('Status', total.status, `Left: ${ms2Str(total.remaining)}`);
+    this.charm.write(`\n`);
   }
 
-  bar(percent, size = 0.5) {
+  truncatedLine(label, str = '', extra = '', size = 0.5) {
+    let firstPad = ' '.repeat(CliBatchTranscodeVideo.FIRST_TAB);
+    let labelLen = 8;
+    let maxLen = 100.0 * size;
+    let maxWithoutLabel = maxLen - labelLen;
+    let formatted;
+    if (str.length > maxWithoutLabel) {
+      let frontStr = str.slice(0, maxWithoutLabel - 13);
+      let endStr = str.slice(-10);
+      formatted = `${frontStr}...${endStr}`;
+    } else {
+      let paddingSize = maxWithoutLabel - str.length;
+      let padding = ' '.repeat(paddingSize);
+      formatted = `${str}${padding}`;
+    }
+    this.charm
+    .display('reset')
+    .write(`${firstPad}${this.labelPad(`${label}: `, labelLen)}${formatted}  ${extra}\n`);
+  }
+
+  labelPad(label, pad = 8) {
+    return label.length < pad ? label + (' '.repeat(pad - label.length)) : label;
+  }
+
+  statusLine({label, elapsed, remaining}) {
+    this.charm
+    .display('reset')
+    .write(`${this.labelPad(`${label}: `, 12)}Elapsed: ${ms2Str(elapsed)}\tRemaining: ${ms2Str(remaining)}\n`);
+  }
+
+  bar(label, percent, size = 0.5) {
     let printPercent = f2Percent(percent);
     let colored = Math.round(Number.parseFloat(printPercent) * size);
     let uncolored = (100 * size) - colored;
     this.charm
     .display('reset')
-    .write(`\t`)
+    .write(this.labelPad(`${label}: `, CliBatchTranscodeVideo.FIRST_TAB))
     .background('cyan')
     .write(' '.repeat(colored))
     .display('reset')
@@ -120,13 +158,10 @@ class Progress {
     .write(' '.repeat(uncolored))
     .display('reset')
     .display('bright')
-    .write(`\t${printPercent}%\n`);
+    .write(`  ${printPercent}%\n`);
   }
 
   clear() {
-    this.charm.up(5).erase('line').erase('down').write('\r');
+    this.charm.up(6).erase('line').erase('down').write('\r');
   }
-}
-
-// console.log('- Starting batch operation...');
-// say.notify('Scanning for media using search pattern.', say.DEBUG, filePattern);
+};

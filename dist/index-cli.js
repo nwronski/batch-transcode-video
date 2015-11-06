@@ -6,7 +6,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -35,6 +35,11 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
     key: 'INTERVAL_MS',
     get: function get() {
       return 1000;
+    }
+  }, {
+    key: 'FIRST_TAB',
+    get: function get() {
+      return 10;
     }
   }]);
 
@@ -85,6 +90,8 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
     key: 'state',
     value: function state() {
       try {
+        var processed = this.processedFileSizes;
+        var remaining = this.totalFileSizes.toFixed(2);
         return {
           current: {
             file: this.currentFile.fileName,
@@ -95,13 +102,14 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
           total: {
             percent: this.currentPercent,
             elapsed: this.currentTime,
-            remaining: this.remainingTime
+            remaining: this.remainingTime,
+            status: (processed > 0 ? processed.toFixed(2) : '(estimating)') + ' MB of ' + remaining + ' MB'
           }
         };
       } catch (e) {
         return {
           current: {
-            file: '[Calculating remaining time, please wait...]',
+            file: '[Scanning ' + this.files.length + ' files...]',
             percent: 0,
             elapsed: 0,
             remaining: 0
@@ -109,7 +117,8 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
           total: {
             percent: 0,
             elapsed: 0,
-            remaining: 0
+            remaining: 0,
+            status: '[Calculating remaining time...]'
           }
         };
       }
@@ -139,47 +148,88 @@ var Progress = (function () {
     this.charm = charm;
   }
 
-  // console.log('- Starting batch operation...');
-  // say.notify('Scanning for media using search pattern.', say.DEBUG, filePattern);
-
   _createClass(Progress, [{
     key: 'start',
     value: function start() {
-      this.charm.write('Starting batch operation...\n\n');
+      this.charm.display('reset').write('Starting batch operation...\n\n');
     }
   }, {
     key: 'finish',
     value: function finish() {
-      this.charm.write('\n\nFinished processing.');
+      this.charm.display('reset').write('\nFinished processing.\n\n');
     }
   }, {
     key: 'write',
     value: function write(state) {
       var cur = state.current;
       var total = state.total;
-      this.bar(cur.percent);
-      this.charm.display('reset')
-      // TODO: Add ellipsis to file name over certain size
-      .write('\tFile: ' + cur.file + '\n').write('Current\t' + (0, _libUtilJs.fractionToPercent)(cur.percent) + '%\t\tElapsed: ' + (0, _libUtilJs.millisecondsToStr)(cur.elapsed) + '\tRemaining: ' + (0, _libUtilJs.millisecondsToStr)(cur.remaining) + '\n').write('Total\t' + (0, _libUtilJs.fractionToPercent)(total.percent) + '%\t\tElapsed: ' + (0, _libUtilJs.millisecondsToStr)(total.elapsed) + '\tRemaining: ' + (0, _libUtilJs.millisecondsToStr)(total.remaining) + '\n\n');
+      this.bar('Current', cur.percent);
+      this.truncatedLine('File', cur.file, 'Left: ' + (0, _libUtilJs.millisecondsToStr)(cur.remaining));
+      // this.statusLine({label: 'Current', elapsed: cur.elapsed, remaining: cur.remaining});
+      this.charm.write('\n');
+      this.bar('Total', total.percent);
+      // this.statusLine({label: 'Total', elapsed: total.elapsed, remaining: total.remaining});
+      this.truncatedLine('Status', total.status, 'Left: ' + (0, _libUtilJs.millisecondsToStr)(total.remaining));
+      this.charm.write('\n');
+    }
+  }, {
+    key: 'truncatedLine',
+    value: function truncatedLine(label) {
+      var str = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
+      var extra = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
+      var size = arguments.length <= 3 || arguments[3] === undefined ? 0.5 : arguments[3];
+
+      var firstPad = ' '.repeat(CliBatchTranscodeVideo.FIRST_TAB);
+      var labelLen = 8;
+      var maxLen = 100.0 * size;
+      var maxWithoutLabel = maxLen - labelLen;
+      var formatted = undefined;
+      if (str.length > maxWithoutLabel) {
+        var frontStr = str.slice(0, maxWithoutLabel - 13);
+        var endStr = str.slice(-10);
+        formatted = frontStr + '...' + endStr;
+      } else {
+        var paddingSize = maxWithoutLabel - str.length;
+        var padding = ' '.repeat(paddingSize);
+        formatted = '' + str + padding;
+      }
+      this.charm.display('reset').write('' + firstPad + this.labelPad(label + ': ', labelLen) + formatted + '  ' + extra + '\n');
+    }
+  }, {
+    key: 'labelPad',
+    value: function labelPad(label) {
+      var pad = arguments.length <= 1 || arguments[1] === undefined ? 8 : arguments[1];
+
+      return label.length < pad ? label + ' '.repeat(pad - label.length) : label;
+    }
+  }, {
+    key: 'statusLine',
+    value: function statusLine(_ref) {
+      var label = _ref.label;
+      var elapsed = _ref.elapsed;
+      var remaining = _ref.remaining;
+
+      this.charm.display('reset').write(this.labelPad(label + ': ', 12) + 'Elapsed: ' + (0, _libUtilJs.millisecondsToStr)(elapsed) + '\tRemaining: ' + (0, _libUtilJs.millisecondsToStr)(remaining) + '\n');
     }
   }, {
     key: 'bar',
-    value: function bar(percent) {
-      var size = arguments.length <= 1 || arguments[1] === undefined ? 0.5 : arguments[1];
+    value: function bar(label, percent) {
+      var size = arguments.length <= 2 || arguments[2] === undefined ? 0.5 : arguments[2];
 
       var printPercent = (0, _libUtilJs.fractionToPercent)(percent);
       var colored = Math.round(Number.parseFloat(printPercent) * size);
       var uncolored = 100 * size - colored;
-      this.charm.display('reset').write('\t').background('cyan').write(' '.repeat(colored)).display('reset').background('black').write(' '.repeat(uncolored)).display('reset').display('bright').write('\t' + printPercent + '%\n');
+      this.charm.display('reset').write(this.labelPad(label + ': ', CliBatchTranscodeVideo.FIRST_TAB)).background('cyan').write(' '.repeat(colored)).display('reset').background('black').write(' '.repeat(uncolored)).display('reset').display('bright').write('  ' + printPercent + '%\n');
     }
   }, {
     key: 'clear',
     value: function clear() {
-      this.charm.up(5).erase('line').erase('down').write('\r');
+      this.charm.up(6).erase('line').erase('down').write('\r');
     }
   }]);
 
   return Progress;
 })();
 
+;
 module.exports = exports['default'];
