@@ -3,6 +3,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v1.0.0-beta] - 2015-11-07
+### Added
+- You can now use the module:
+  - From the CLI as `batch-transcode-video` (default global option).
+  - Require the ES5 compatible `dist/` files (default local option).
+  - Require the raw ES2015 files from the root folder `index.js` or `index-cli.js` for the command line version.
+- Fancy new CLI:
+  - Added progress bars to output.
+  - Added summary that is displayed on exiting the process.
+  - Add colored summary bar to summary output.
+  - Estimate remaining time and current percent completion for each file and the entire batch operation even when no data is available from the child process.
+
+### Changed
+- Entire repo rewritten to use ES2015
+- Added `grunt` and `grunt watch` tasks to build ES2015 source
+
+### Fixed
+- Do not increment time unless running.
+- Save stop time when main class errors out.
+- Fix percent and time calculations.
+
 ## [v0.3.1] - 2015-10-27
 ### Fixed
 - Entire `stdout` buffer was being saved to memory for each child process which was a large amount of data for each transcoding operation. Now only the most recent chunk of lines from a child process `stdout` is saved in memory.
@@ -55,7 +76,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.1...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0-beta...HEAD
+[v1.0.0-beta]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.1...v1.0.0-beta
 [v0.3.1]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.0...v0.3.1
 [v0.3.0]: https://github.com/nwronski/batch-transcode-video/compare/v0.2.1...v0.3.0
 [v0.2.1]: https://github.com/nwronski/batch-transcode-video/compare/v0.2.0...v0.2.1
