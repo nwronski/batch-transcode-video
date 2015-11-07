@@ -143,6 +143,8 @@ var BatchTranscodeVideo = (function () {
         _this2.status = BatchTranscodeVideo.FINISHED;
         _this2.currentIndex = -1;
       })['catch'](function (err) {
+        _this2.lastTime = Date.now();
+        _this2.stopTime = _this2.lastTime;
         _this2.status = BatchTranscodeVideo.ERRORED;
         throw err;
       });

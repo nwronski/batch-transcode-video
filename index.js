@@ -88,6 +88,8 @@ export default class BatchTranscodeVideo {
       this.currentIndex = -1;
     })
     .catch((err) => {
+      this.lastTime = Date.now();
+      this.stopTime = this.lastTime;
       this.status = BatchTranscodeVideo.ERRORED;
       throw err;
     });
