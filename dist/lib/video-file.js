@@ -291,7 +291,16 @@ var VideoFile = (function () {
   }, {
     key: 'remainingTime',
     get: function get() {
-      return Math.max(this.totalTime - this.currentTime, 0);
+      if (this.lastPercent > 0) {
+        return Math.max(this.totalTime - this.currentTime, 0);
+      } else {
+        var est = this.getEstSpeed();
+        if (est !== null && this.isRunning) {
+          return this.fileSize * est - this.currentTime;
+        } else {
+          return 0;
+        }
+      }
     }
   }, {
     key: 'isReady',
