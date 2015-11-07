@@ -291,7 +291,7 @@ var VideoFile = (function () {
   }, {
     key: 'remainingTime',
     get: function get() {
-      return this.totalTime - this.currentTime;
+      return Math.max(this.totalTime - this.currentTime, 0);
     }
   }, {
     key: 'isReady',

@@ -196,17 +196,17 @@ var BatchTranscodeVideo = (function () {
   }, {
     key: 'currentTime',
     get: function get() {
-      return Date.now() - this.startTime;
+      return (this.isRunning ? Date.now() : this.stopTime) - this.startTime;
     }
   }, {
     key: 'totalTime',
     get: function get() {
-      return this.currentTime / this.currentPercent;
+      return this.isRunning ? this.currentTime / this.currentPercent : this.stopTime - this.startTime;
     }
   }, {
     key: 'remainingTime',
     get: function get() {
-      return this.totalTime - this.currentTime;
+      return Math.max(this.totalTime - this.currentTime, 0);
     }
   }, {
     key: 'isReady',

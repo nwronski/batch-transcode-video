@@ -133,15 +133,15 @@ export default class BatchTranscodeVideo {
   }
 
   get currentTime() {
-    return Date.now() - this.startTime;
+    return (this.isRunning ? Date.now() : this.stopTime) - this.startTime;
   }
 
   get totalTime() {
-    return this.currentTime / this.currentPercent;
+    return this.isRunning ? (this.currentTime / this.currentPercent) : (this.stopTime - this.startTime);
   }
 
   get remainingTime() {
-    return this.totalTime - this.currentTime;
+    return Math.max(this.totalTime - this.currentTime, 0);
   }
 
   get isReady() {
