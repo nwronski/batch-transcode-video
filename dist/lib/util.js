@@ -52,13 +52,14 @@ function strToMilliseconds(strTime) {
 
 function millisecondsToStr(ms) {
   var parts = [0, 0, 0];
-  if (isANumber(ms)) {
+  var partLabels = ['h', 'm', 's'];
+  if (isANumber(ms) && ms > 1000) {
     ms /= 1000;
     parts = [Math.floor(ms / Math.pow(60, 2)), Math.floor(ms % Math.pow(60, 2) / 60), Math.round(ms % 60)];
   }
-  return parts.map(function (p) {
-    return padTo(p.toString());
-  }).join(':');
+  return parts.map(function (p, i) {
+    return '' + padTo(p.toString()) + partLabels[i];
+  }).join(' ');
 }
 
 ;
