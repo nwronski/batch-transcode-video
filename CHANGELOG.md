@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v1.0.2] - 2015-11-08
+### Fixed
+- Fixed `query-handbrake-log` file path bug in Windows.
+- Fixed empty summary bar display bug that caused no summary bar to appear when there were no video files found for the arguments given.
+
 ## [v1.0.1] - 2015-11-08
 ### Added
 - Take an educated guess at the current percentage and remaining time before there is any data from the child process that can be used to estimate progress.
@@ -100,7 +105,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.1...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.2...HEAD
+[v1.0.2]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0...v1.0.1
 [v1.0.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0-beta...v1.0.0
 [v1.0.0-beta]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.1...v1.0.0-beta
