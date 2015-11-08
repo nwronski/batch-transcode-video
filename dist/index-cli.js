@@ -26,9 +26,17 @@ var _libProgressJs = require('./lib/progress.js');
 
 var _libProgressJs2 = _interopRequireDefault(_libProgressJs);
 
+var _libHelpJs = require('./lib/help.js');
+
+var _libHelpJs2 = _interopRequireDefault(_libHelpJs);
+
 var _charm2 = require('charm');
 
 var _charm3 = _interopRequireDefault(_charm2);
+
+var _libChildPromiseJs = require('./lib/child-promise.js');
+
+var _libChildPromiseJs2 = _interopRequireDefault(_libChildPromiseJs);
 
 var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   _inherits(CliBatchTranscodeVideo, _BatchTranscodeVideo);
@@ -50,7 +58,14 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
 
     _get(Object.getPrototypeOf(CliBatchTranscodeVideo.prototype), 'constructor', this).call(this, options, transcodeOptions);
     this.timer = null;
-    this.progress = new _libProgressJs2['default']((0, _charm3['default'])(process), CliBatchTranscodeVideo.FIRST_TAB);
+    this.files = [];
+    this.charm = (0, _charm3['default'])(process);
+    if (this.options['help'] === true) {
+      (0, _libHelpJs2['default'])(this.charm);
+      process.exit(0);
+    }
+    this.progress = new _libProgressJs2['default'](this.charm, CliBatchTranscodeVideo.FIRST_TAB, this.options['quiet']);
+    _libChildPromiseJs2['default'].debug = this.options['debug'];
     return this;
   }
 
@@ -59,16 +74,52 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
     value: function cli() {
       var _this = this;
 
+      process.on('uncaughtException', function (err) {
+        _this.error = err;
+        _this.onError(err);
+      });
       process.on('exit', function () {
-        return _this.finish();
+        if (_this.files && _this.files.length) {
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = _this.files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var file = _step.value;
+
+              try {
+                if (file._encode !== null) {
+                  file._encode.kill();
+                }
+              } catch (e) {}
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator['return']) {
+                _iterator['return']();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        }
+        _this.finish();
       });
       this.progress.start();
 
-      this.progress.write(this.state());
-      this.timer = setInterval(function () {
-        _this.progress.clear();
-        _this.progress.write(_this.state());
-      }, CliBatchTranscodeVideo.INTERVAL_MS);
+      if (this.options['debug'] !== true && this.options['quiet'] !== true) {
+        this.progress.write(this.state());
+        this.timer = setInterval(function () {
+          _this.progress.clear();
+          _this.progress.write(_this.state());
+        }, CliBatchTranscodeVideo.INTERVAL_MS);
+      }
 
       return this.transcodeAll().then(function (res) {
         return _this.onSuccess(res);
@@ -83,7 +134,7 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
         clearInterval(this.timer);
         this.timer = null;
       }
-      this.progress.clear();
+      // this.progress.clear();
       this.progress.finish();
       this.progress.summary(this.finalState());
       if (!this.isSuccess) {
@@ -102,7 +153,8 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
         processed: processed.toFixed(2),
         total: total.toFixed(2),
         speed: speed.toFixed(2),
-        success: this.isSuccess
+        success: this.isFinished,
+        error: this.error
       };
     }
   }, {
@@ -122,7 +174,8 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
             percent: this.currentPercent,
             elapsed: this.currentTime,
             remaining: this.remainingTime,
-            status: (processed > 0 ? processed.toFixed(2) : '(estimating)') + ' MB of ' + remaining + ' MB'
+            processed: (processed > 0 ? processed.toFixed(2) : '(estimating)') + ' MB of ' + remaining + ' MB',
+            files: this.files
           }
         };
       } catch (e) {

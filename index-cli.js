@@ -1,7 +1,9 @@
 import Promise from 'bluebird';
 import BatchTranscodeVideo from './index.js';
 import Progress from './lib/progress.js';
+import help from './lib/help.js';
 import _charm from 'charm';
+import ChildPromise from './lib/child-promise.js';
 
 export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
   static get INTERVAL_MS() { return 1000; }
@@ -9,19 +11,43 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
   constructor(options, transcodeOptions) {
     super(options, transcodeOptions);
     this.timer = null;
-    this.progress = new Progress(_charm(process), CliBatchTranscodeVideo.FIRST_TAB);
+    this.files = [];
+    this.charm = _charm(process);
+    if (this.options['help'] === true) {
+      help(this.charm);
+      process.exit(0);
+    }
+    this.progress = new Progress(this.charm, CliBatchTranscodeVideo.FIRST_TAB, this.options['quiet']);
+    ChildPromise.debug = this.options['debug'];
     return this;
   }
 
   cli() {
-    process.on('exit', () => this.finish());
+    process.on('uncaughtException', (err) => {
+      this.error = err;
+      this.onError(err);
+    });
+    process.on('exit', () => {
+      if (this.files && this.files.length) {
+        for (let file of this.files) {
+          try {
+            if (file._encode !== null) {
+              file._encode.kill();
+            }
+          } catch (e) {}
+        }
+      }
+      this.finish();
+    });
     this.progress.start();
 
-    this.progress.write(this.state());
-    this.timer = setInterval(() => {
-      this.progress.clear();
+    if (this.options['debug'] !== true && this.options['quiet'] !== true) {
       this.progress.write(this.state());
-    }, CliBatchTranscodeVideo.INTERVAL_MS);
+      this.timer = setInterval(() => {
+        this.progress.clear();
+        this.progress.write(this.state());
+      }, CliBatchTranscodeVideo.INTERVAL_MS);
+    }
 
     return this.transcodeAll()
     .then(res => this.onSuccess(res))
@@ -33,7 +59,7 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
       clearInterval(this.timer);
       this.timer = null;
     }
-    this.progress.clear();
+    // this.progress.clear();
     this.progress.finish();
     this.progress.summary(this.finalState());
     if (!this.isSuccess) {
@@ -51,7 +77,8 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
       processed: processed.toFixed(2),
       total: total.toFixed(2),
       speed: speed.toFixed(2),
-      success: this.isSuccess
+      success: this.isFinished,
+      error: this.error
     };
   }
 
@@ -70,7 +97,8 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
           percent: this.currentPercent,
           elapsed: this.currentTime,
           remaining: this.remainingTime,
-          status: `${processed > 0 ? processed.toFixed(2) : '(estimating)'} MB of ${remaining} MB`
+          processed: `${processed > 0 ? processed.toFixed(2) : '(estimating)'} MB of ${remaining} MB`,
+          files: this.files
         }
       };
     } catch (e) {
