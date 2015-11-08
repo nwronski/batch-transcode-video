@@ -3,10 +3,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v1.0.1] - 2015-11-08
+### Added
+- Take an educated guess at the current percentage and remaining time before there is any data from the child process that can be used to estimate progress.
+
+### Changed
+- Generate an error when the `detect-crop` returns multiple crop values for a video.
+
+### Fixed
+- Fixed false positive errors in OS X environment.
+
 ## [v1.0.0] - 2015-11-08
 ### Added
 - Added back `--quiet` and `--debug` flags to new ES2015 version of CLI.
-  - `--debug` mode disables progress indicator and then streams child process to master stdout.
+  - `--debug` mode disables progress indicator and then streams child process to master `stdout`.
   - `--quiet` mode now prevents **any** logging to stdout and will only exit `0` on success or `1` on error
 
 ### Fixed
@@ -90,7 +100,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.1...HEAD
+[v1.0.1]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0...v1.0.1
 [v1.0.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0-beta...v1.0.0
 [v1.0.0-beta]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.1...v1.0.0-beta
 [v0.3.1]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.0...v0.3.1
