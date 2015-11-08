@@ -162,11 +162,19 @@ var VideoFile = (function () {
         cwd: this.options['curDir']
       });
       return this._crop.start().then(function (output) {
-        var useCommand = output.replace(/[\S]+$/gm, '').split(/\n+/).slice(-1)[0].trim();
-        if (!/^transcode\-video/.test(useCommand)) {
-          throw new _transcodeErrorJs2['default']('Crop detection failed. Skipping transcode for file.', _this2.fileName, useCommand);
+        // Make sure conflicting results are not returned from detect-crop
+        var useCommands = output.replace(/^\s+|\s+$/g, '').split(/\n+/).map(function (line) {
+          return line.trim();
+        }).filter(function (line) {
+          return (/^transcode\-video/.test(line)
+          );
+        });
+        if (useCommands.length === 0) {
+          throw new _transcodeErrorJs2['default']('Crop detection failed. Skipping transcode for file.', _this2.fileName, output);
+        } else if (useCommands.length > 1) {
+          throw new _transcodeErrorJs2['default']('Crop detection returned conflicting results.', _this2.fileName, useCommands.join('\n'));
         }
-        return useCommand;
+        return useCommands[0];
       }).then(function (command) {
         var useArgs = (0, _shellQuote.parse)(command);
         useArgs.splice(1, 0, _this2.filePathRel, '--output', _this2.destFileDir);
@@ -176,8 +184,8 @@ var VideoFile = (function () {
           _this2.cropValue = useArgs[crop];
           // say.notify(`Crop values detected for file: ${useArgs[crop]}.`, say.DEBUG, fileName, command);
         } else {
-            throw new _transcodeErrorJs2['default']('Could not detect crop values. Skipping transcode for file.', _this2.fileName, command);
-          }
+          throw new _transcodeErrorJs2['default']('Could not detect crop values. Skipping transcode for file.', _this2.fileName, command);
+        }
         return useArgs;
       });
     }
