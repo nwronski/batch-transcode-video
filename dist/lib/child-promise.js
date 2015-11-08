@@ -22,26 +22,34 @@ var _transcodeErrorJs = require('./transcode-error.js');
 
 var _transcodeErrorJs2 = _interopRequireDefault(_transcodeErrorJs);
 
-function windowsCommand(cmd, args) {
-  return [cmd].concat(args.map(function (arg) {
-    return (/^[^\-]/.test(arg) ? '"' + arg + '"' : arg
-    );
-  })).join(' ');
-}
+var _debug = false;
 
 var ChildPromise = (function () {
+  _createClass(ChildPromise, null, [{
+    key: 'debug',
+    get: function get() {
+      return _debug;
+    },
+    set: function set(val) {
+      _debug = val;
+    }
+  }]);
+
   function ChildPromise(options, childOptions) {
     _classCallCheck(this, ChildPromise);
 
     // cmd, args, file, dir, mute, callback
+    var isWindows = (0, _utilJs.isWindows)();
     this.options = Object.assign({
       fileName: '',
       cmd: '',
       args: [],
       cwd: '.',
-      isWindows: /^win/i.test(process.platform),
+      isWindows: isWindows,
       onData: function onData() {},
-      onError: function onError() {}
+      onError: function onError() {},
+      // TODO: Had to mute stderr on Windows to prevent false positive errors
+      muted: isWindows
     }, options);
     this.childOptions = Object.assign({
       cwd: this.options.cwd
@@ -68,7 +76,7 @@ var ChildPromise = (function () {
 
         _this._child = isWindows ?
         // Use exec() and special escape syntax for Windows
-        (0, _child_process.exec)(windowsCommand(cmd, args), _this.childOptions) :
+        (0, _child_process.exec)((0, _utilJs.windowsCommand)(cmd, args), _this.childOptions) :
         // Use spawn() and normal syntax for non-Windows
         (0, _child_process.spawn)(cmd, args, _this.childOptions);
 
@@ -96,6 +104,9 @@ var ChildPromise = (function () {
       // amount of output being saved in memory
       this.stdout = !/\n/.test(data) ? this.stdout + data : data;
       this.options.onData(data);
+      if (ChildPromise.debug) {
+        console.log('stdio: ' + data);
+      }
     }
   }, {
     key: 'stdErrHandler',
@@ -103,6 +114,9 @@ var ChildPromise = (function () {
       var data = buffer.toString();
       this.stderr += data;
       this.options.onError(data);
+      if (ChildPromise.debug) {
+        console.log('stderr: ' + data);
+      }
     }
   }, {
     key: 'errHandler',
@@ -113,11 +127,18 @@ var ChildPromise = (function () {
   }, {
     key: 'closeHandler',
     value: function closeHandler(code) {
-      if (code !== 0) {
+      if (code !== 0 && this.options.muted !== true) {
         this.errHandler(this.stderr);
       } else {
         this._accept(this.stdout);
       }
+    }
+  }, {
+    key: 'kill',
+    value: function kill() {
+      try {
+        this._child.kill();
+      } catch (e) {}
     }
   }, {
     key: 'promise',
