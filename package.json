@@ -20,8 +20,7 @@
     "LICENSE",
     "CHANGELOG.md",
     "README.md",
-    "dist/",
-    "index.js"
+    "dist/"
   ],
   "main": "dist/index.js",
   "scripts": {

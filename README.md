@@ -38,7 +38,7 @@ If you want to modify the search pattern that will be used to locate video in th
 
 ### Non-binary Usage
 
-You can also directly `require()` the underlying `BatchTranscodeVideo` video class. By default, the ES5-compatible files will be loaded when requiring this module. But, you can also require the raw ES2015 source files if you are running in an ES2015 capable environment.
+You can also directly `require()` the underlying `BatchTranscodeVideo` video class. By default, the ES5-compatible files will be loaded when requiring this module.
 
 ``` javascript
 // ES5 (default)
@@ -47,19 +47,33 @@ var batch = new BatchTranscodeVideo({
   input: './my/rawVideos/',
   output: './my/transcodedVideos/'
 }, ['--dry-run']);
+batch
+.transcodeAll()
+.then(function (res) {
+  console.log(res);
+})
+.catch(function (err) {
+  console.log(err);
+});
 ```
+
+But, you can also require the raw ES2015 source files if you are running in an ES2015 capable environment.
+
+**Note:** The un-transpiled source files are not including when you install the library using `npm install`. To get the ES2015 source, you need to **clone this repository from GitHub** using `git clone`.
 
 ``` javascript
 // ES2015
-import BatchTranscodeVideo from './node_modules/batch-transcode-video/index.js';
+import BatchTranscodeVideo from './batch-transcode-video/index.js';
 let batch = new BatchTranscodeVideo(options, transcodeOptions);
 ```
 
-**Note:** If you `require()` the non-CLI files, you will not see any formatted progress bars and summary output in the console. To require the CLI version of the library from your application, then simply `import` the `./index-cli.js` file instead of `index.js`.
+**Note:** If you `import` the non-CLI files, you will not see any formatted progress bars and summary output in the console. To require the CLI version of the library from your application, then simply `import` the `index-cli.js` file instead of `index.js`.
 
 ``` javascript
-import CliBatchTranscodeVideo from './node_modules/batch-transcode-video/index-cli.js';
-let batch = new CliBatchTranscodeVideo(options, transcodeOptions);
+import CliBatchTranscodeVideo from './batch-transcode-video/index-cli.js';
+import minimist from 'minimist';
+let options = minimist(process.argv.slice(2), {'--': true});
+let batch = new CliBatchTranscodeVideo(options, options['--']);
 // Start CLI mode
 batch.cli();
 ```
