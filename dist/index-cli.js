@@ -64,7 +64,7 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
       (0, _libHelpJs2['default'])(this.charm);
       process.exit(0);
     }
-    this.progress = new _libProgressJs2['default'](this.charm, CliBatchTranscodeVideo.FIRST_TAB, this.options['quiet']);
+    this.progress = new _libProgressJs2['default'](this.charm, CliBatchTranscodeVideo.FIRST_TAB);
     _libChildPromiseJs2['default'].debug = this.options['debug'];
     return this;
   }
@@ -111,13 +111,17 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
         }
         _this.finish();
       });
-      this.progress.start();
+
+      if (this.options['quiet'] !== true) {
+        this.progress.start();
+      }
 
       if (this.options['debug'] !== true && this.options['quiet'] !== true) {
         this.progress.write(this.state());
         this.timer = setInterval(function () {
+          var state = _this.state();
           _this.progress.clear();
-          _this.progress.write(_this.state());
+          _this.progress.write(state);
         }, CliBatchTranscodeVideo.INTERVAL_MS);
       }
 
@@ -134,9 +138,11 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
         clearInterval(this.timer);
         this.timer = null;
       }
-      // this.progress.clear();
-      this.progress.finish();
-      this.progress.summary(this.finalState());
+      if (this.options['quiet'] !== true) {
+        // this.progress.clear();
+        this.progress.finish();
+        this.progress.summary(this.finalState());
+      }
       if (!this.isSuccess) {
         process.reallyExit(1);
       }

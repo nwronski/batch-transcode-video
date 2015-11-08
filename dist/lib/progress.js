@@ -12,14 +12,11 @@ var _utilJs = require('./util.js');
 
 var Progress = (function () {
   function Progress(charm, firstTab) {
-    var quiet = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-
     _classCallCheck(this, Progress);
 
     this.charm = charm;
     this.firstTab = firstTab;
     this.firstPad = ' '.repeat(this.firstTab);
-    this.quiet = quiet;
     this.color = {
       skipped: 'blue',
       written: 'green',
@@ -37,66 +34,20 @@ var Progress = (function () {
   _createClass(Progress, [{
     key: 'start',
     value: function start() {
-      if (this.quiet === true) {
-        return false;
-      }
       this.charm.display('bright').foreground('cyan').write('Starting batch operation...').display('reset').write('\n\n');
     }
   }, {
     key: 'finish',
     value: function finish() {
-      if (this.quiet === true) {
-        return false;
-      }
       this.charm.display('bright').foreground('cyan').write('Finished processing.').display('reset').write('\n\n');
-    }
-  }, {
-    key: 'getCounts',
-    value: function getCounts() {
-      var _this = this;
-
-      var files = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
-      var done = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-      var counts = {
-        written: 0,
-        errored: 0,
-        skipped: 0,
-        queued: 0
-      };
-      files.forEach(function (file) {
-        var type = _this.getStatusName(file, done);
-        counts[type] += 1;
-      });
-      return counts;
-    }
-  }, {
-    key: 'getStatusName',
-    value: function getStatusName(file) {
-      var done = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-      var type = undefined;
-      if (file.isWritten) {
-        type = 'written';
-      } else if (file.isErrored || done && file.isRunning) {
-        type = 'errored';
-      } else if (file.isSkipped) {
-        type = 'skipped';
-      } else if (file.isReady || !done && file.isRunning) {
-        type = 'queued';
-      }
-      return type;
     }
   }, {
     key: 'summary',
     value: function summary(state) {
-      if (this.quiet === true) {
-        return false;
-      }
       if (state.error !== null) {
         this.charm.display('reset').foreground('white').write('\n' + state.error + '\n');
       }
-      var counts = this.getCounts(state.files, true);
+      var counts = Progress.getCounts(state.files, true);
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -105,11 +56,11 @@ var Progress = (function () {
         for (var _iterator = state.files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var file = _step.value;
 
-          var type = this.getStatusName(file, true);
-          this.bulletPoint('' + this.labelPad(type.toUpperCase() + ': ', 10) + this.truncateStr(file.fileName, 0.75, 10), this.color[type], this.bold[type]);
+          var type = Progress.getStatusName(file, true);
+          this.bulletPoint('' + Progress.labelPad(type.toUpperCase() + ': ', 10) + Progress.truncateStr(file.fileName, 0.75, 10), this.color[type], this.bold[type]);
           if (file.error !== null) {
             // Print error message
-            this.charm.display('reset').write(file.error + '\n');
+            this.charm.display('reset').foreground('white').write(file.error + '\n');
           }
         }
       } catch (err) {
@@ -131,7 +82,6 @@ var Progress = (function () {
       this.colorBar('Summary', counts, state.files.length + ' file' + (state.files.length !== 1 ? 's' : ''));
       this.truncatedLine('Processed', state.processed + ' MB of ' + state.total + ' total MB');
       this.charm.write('\n');
-      // this.bulletPoint(`Processed ${state.processed} MB of ${state.total} total MB across ${state.files.length} file${state.files.length !== 1 ? 's' : ''}.`, 'cyan');
       var finalMsg = state.success ? 'Finished without error.' : 'Finished with errors.';
       this.bulletPoint(finalMsg, state.success ? 'green' : 'red', true, '=>');
       this.charm.display('reset').write('\n');
@@ -139,12 +89,9 @@ var Progress = (function () {
   }, {
     key: 'write',
     value: function write(state) {
-      if (this.quiet === true) {
-        return false;
-      }
       var cur = state.current;
       var total = state.total;
-      var counts = this.getCounts(total.files, false);
+      var counts = Progress.getCounts(total.files, false);
       this.bar('Current', cur.percent);
       this.truncatedLine('File', cur.file, (0, _utilJs.millisecondsToStr)(cur.remaining));
       this.charm.write('\n');
@@ -156,7 +103,7 @@ var Progress = (function () {
   }, {
     key: 'fileStatusLine',
     value: function fileStatusLine(counts) {
-      this.charm.display('reset').foreground('cyan').write('' + this.firstPad + this.labelPad('Status: '));
+      this.charm.display('reset').foreground('cyan').write('' + this.firstPad + Progress.labelPad('Status: '));
       counts['queued'] = Math.max(counts['queued'] - 1, 0);
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
@@ -202,35 +149,8 @@ var Progress = (function () {
       var labelLen = arguments.length <= 4 || arguments[4] === undefined ? 8 : arguments[4];
 
       labelLen = Math.max(labelLen, label.length + 2);
-      var formatted = this.truncateStr(str, size, labelLen);
-      this.charm.display('reset').foreground('cyan').write('' + this.firstPad + this.labelPad(label + ': ', labelLen)).display('reset').foreground('white').write('' + formatted).foreground('yellow').write('  ' + extra + '\n');
-    }
-  }, {
-    key: 'truncateStr',
-    value: function truncateStr(str) {
-      var size = arguments.length <= 1 || arguments[1] === undefined ? 0.5 : arguments[1];
-      var labelLen = arguments.length <= 2 || arguments[2] === undefined ? 8 : arguments[2];
-
-      var maxLen = 100.0 * size;
-      var maxWithoutLabel = maxLen - labelLen;
-      var formatted = undefined;
-      if (str.length > maxWithoutLabel) {
-        var frontStr = str.slice(0, maxWithoutLabel - 13);
-        var endStr = str.slice(-10);
-        formatted = frontStr + '...' + endStr;
-      } else {
-        var paddingSize = maxWithoutLabel - str.length;
-        var padding = ' '.repeat(paddingSize);
-        formatted = '' + str + padding;
-      }
-      return formatted;
-    }
-  }, {
-    key: 'labelPad',
-    value: function labelPad(label) {
-      var pad = arguments.length <= 1 || arguments[1] === undefined ? 8 : arguments[1];
-
-      return label.length < pad ? label + ' '.repeat(pad - label.length) : label;
+      var formatted = Progress.truncateStr(str, size, labelLen);
+      this.charm.display('reset').foreground('cyan').write('' + this.firstPad + Progress.labelPad(label + ': ', labelLen)).display('reset').foreground('white').write('' + formatted).foreground('yellow').write('  ' + extra + '\n');
     }
   }, {
     key: 'bar',
@@ -240,7 +160,7 @@ var Progress = (function () {
       var printPercent = (0, _utilJs.fractionToPercent)(percent);
       var colored = Math.round(Number.parseFloat(printPercent) * size);
       var uncolored = 100.0 * size - colored;
-      this.charm.display('bright').foreground('cyan').write(this.labelPad(label + ': ', this.firstTab)).display('reset').background('cyan').write(' '.repeat(colored)).display('reset').background('black').write(' '.repeat(uncolored)).display('reset').display('bright').write('  ' + printPercent + '%\n');
+      this.charm.display('bright').foreground('cyan').write(Progress.labelPad(label + ': ', this.firstTab)).display('reset').background('cyan').write(' '.repeat(colored)).display('reset').background('black').write(' '.repeat(uncolored)).display('reset').display('bright').write('  ' + printPercent + '%\n');
     }
   }, {
     key: 'colorBar',
@@ -254,7 +174,7 @@ var Progress = (function () {
       var totalCount = types.reduce(function (total, type) {
         return total + counts[type];
       }, 0);
-      this.charm.display('bright').foreground('cyan').write(this.labelPad(label + ': ', this.firstTab));
+      this.charm.display('bright').foreground('cyan').write(Progress.labelPad(label + ': ', this.firstTab));
       var total = 100.0 * size;
       var _iteratorNormalCompletion3 = true;
       var _didIteratorError3 = false;
@@ -294,6 +214,68 @@ var Progress = (function () {
     key: 'clear',
     value: function clear() {
       this.charm.up(7).erase('line').erase('down').write('\r');
+    }
+  }], [{
+    key: 'getCounts',
+    value: function getCounts() {
+      var files = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+      var done = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+      var counts = {
+        written: 0,
+        errored: 0,
+        skipped: 0,
+        queued: 0
+      };
+      files.forEach(function (file) {
+        var type = Progress.getStatusName(file, done);
+        counts[type] += 1;
+      });
+      return counts;
+    }
+  }, {
+    key: 'getStatusName',
+    value: function getStatusName(file) {
+      var done = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+      var type = undefined;
+      if (file.isWritten) {
+        type = 'written';
+      } else if (file.isErrored || done && file.isRunning) {
+        type = 'errored';
+      } else if (file.isSkipped) {
+        type = 'skipped';
+      } else if (file.isReady || !done && file.isRunning) {
+        type = 'queued';
+      }
+      return type;
+    }
+  }, {
+    key: 'truncateStr',
+    value: function truncateStr(str) {
+      var size = arguments.length <= 1 || arguments[1] === undefined ? 0.5 : arguments[1];
+      var labelLen = arguments.length <= 2 || arguments[2] === undefined ? 8 : arguments[2];
+
+      var maxLen = 100.0 * size;
+      var maxWithoutLabel = maxLen - labelLen;
+      var formatted = undefined;
+      if (str.length > maxWithoutLabel) {
+        var frontStr = str.slice(0, maxWithoutLabel - 13);
+        var endStr = str.slice(-10);
+        formatted = frontStr + '...' + endStr;
+      } else {
+        var paddingSize = maxWithoutLabel - str.length;
+        var padding = ' '.repeat(paddingSize);
+        formatted = '' + str + padding;
+      }
+      return formatted;
+    }
+  }, {
+    key: 'labelPad',
+    value: function labelPad(label) {
+      var pad = arguments.length <= 1 || arguments[1] === undefined ? 8 : arguments[1];
+
+      return label.length < pad ? label + ' '.repeat(pad - label.length) : label;
     }
   }]);
 

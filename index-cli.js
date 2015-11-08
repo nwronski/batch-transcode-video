@@ -17,7 +17,7 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
       help(this.charm);
       process.exit(0);
     }
-    this.progress = new Progress(this.charm, CliBatchTranscodeVideo.FIRST_TAB, this.options['quiet']);
+    this.progress = new Progress(this.charm, CliBatchTranscodeVideo.FIRST_TAB);
     ChildPromise.debug = this.options['debug'];
     return this;
   }
@@ -39,13 +39,17 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
       }
       this.finish();
     });
-    this.progress.start();
+
+    if (this.options['quiet'] !== true) {
+      this.progress.start();
+    }
 
     if (this.options['debug'] !== true && this.options['quiet'] !== true) {
       this.progress.write(this.state());
       this.timer = setInterval(() => {
+        let state = this.state();
         this.progress.clear();
-        this.progress.write(this.state());
+        this.progress.write(state);
       }, CliBatchTranscodeVideo.INTERVAL_MS);
     }
 
@@ -59,9 +63,11 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
       clearInterval(this.timer);
       this.timer = null;
     }
-    // this.progress.clear();
-    this.progress.finish();
-    this.progress.summary(this.finalState());
+    if (this.options['quiet'] !== true) {
+      // this.progress.clear();
+      this.progress.finish();
+      this.progress.summary(this.finalState());
+    }
     if (!this.isSuccess) {
       process.reallyExit(1);
     }
