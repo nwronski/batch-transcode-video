@@ -138,7 +138,7 @@ function isWindows() {
 
 function windowsCommand(cmd, args) {
   return [cmd].concat(args.map(function (arg) {
-    return (/^[^\-]/.test(arg) ? '"' + arg + '"' : arg
+    return (/^[^\-\"\']/.test(arg) ? '"' + arg + '"' : arg
     );
   })).join(' ');
 }

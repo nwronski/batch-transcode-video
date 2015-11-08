@@ -244,18 +244,15 @@ var VideoFile = (function () {
         this.encodeTime = null;
         return _bluebird2['default'].resolve(true);
       }
-      var quotedLogPath = this.destFilePath + '.log';
-      if ((0, _utilJs.isWindows)()) {
-        quotedLogPath = '"' + quotedLogPath + '"';
-      }
       this._query = new _childPromiseJs2['default']({
         cmd: 'query-handbrake-log',
-        args: ['time', quotedLogPath],
+        args: ['time', this.destFilePath + '.log'],
         fileName: this.destFileName,
         cwd: this.options['curDir']
       });
       return this._query.start().then(function (log) {
-        _this4.encodeTime = (0, _utilJs.strToMilliseconds)(log.trim().match(timePattern)[1]);
+        var matches = log.trim().match(handbrakeLog);
+        _this4.encodeTime = matches !== null ? (0, _utilJs.strToMilliseconds)(matches[1]) : false;
       });
     }
   }, {
