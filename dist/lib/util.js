@@ -15,6 +15,8 @@ exports.fractionToPercent = fractionToPercent;
 exports.isANumber = isANumber;
 exports.padTo = padTo;
 exports.splitter = splitter;
+exports.isWindows = isWindows;
+exports.windowsCommand = windowsCommand;
 
 function isFunction(obj) {
   return type(obj) === 'function';
@@ -123,6 +125,22 @@ function splitter(str, left, len) {
   });
   addLine();
   return built;
+}
+
+;
+
+function isWindows() {
+  return (/^win/i.test(process.platform)
+  );
+}
+
+;
+
+function windowsCommand(cmd, args) {
+  return [cmd].concat(args.map(function (arg) {
+    return (/^[^\-]/.test(arg) ? '"' + arg + '"' : arg
+    );
+  })).join(' ');
 }
 
 ;
