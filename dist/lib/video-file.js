@@ -46,7 +46,7 @@ var progressPattern = 'Encoding: task';
 var progressPercent = /(\d{1,3}\.\d{1,2})\s*\%/;
 var timePattern = '([0-9]{2}\:[0-9]{2}\:[0-9]{2})';
 var handbrakeLog = new RegExp('^' + timePattern);
-var handbrakeFinish = new RegExp('Encode done![\ns]*HandBrake has exited.[s\n]*Elapsed time: ' + timePattern, 'i');
+var handbrakeFinish = new RegExp('Encode done![\\n\\s]*HandBrake has exited.[\\s\\n]*Elapsed time:\\s+' + timePattern, 'mi');
 
 var VideoFile = (function () {
   _createClass(VideoFile, null, [{
@@ -94,6 +94,8 @@ var VideoFile = (function () {
     this._crop = null;
     this._encode = null;
     this._query = null;
+
+    this.error = null;
 
     this.fileName = _path2['default'].basename(filePath);
     this.filePathDir = _path2['default'].dirname(filePath);
@@ -145,8 +147,7 @@ var VideoFile = (function () {
         }
       })['catch'](function (e) {
         _this.error = e;
-        _this.status = _this.isRunning ? VideoFile.ERRORED : _this.status;
-        console.log(_this.error.toString());
+        _this.status = VideoFile.ERRORED;
       });
     }
   }, {
@@ -238,9 +239,13 @@ var VideoFile = (function () {
         this.encodeTime = null;
         return _bluebird2['default'].resolve(true);
       }
+      var quotedLogPath = this.destFilePath + '.log';
+      if ((0, _utilJs.isWindows)()) {
+        quotedLogPath = '"' + quotedLogPath + '"';
+      }
       this._query = new _childPromiseJs2['default']({
         cmd: 'query-handbrake-log',
-        args: ['time', this.destFilePath + '.log'],
+        args: ['time', quotedLogPath],
         fileName: this.destFileName,
         cwd: this.options['curDir']
       });
