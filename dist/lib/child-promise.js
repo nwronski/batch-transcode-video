@@ -48,8 +48,8 @@ var ChildPromise = (function () {
       isWindows: isWindows,
       onData: function onData() {},
       onError: function onError() {},
-      // TODO: Had to mute stderr on Windows to prevent false positive errors
-      muted: isWindows
+      // Note: Had to mute stderr to prevent false positive errors
+      muted: true
     }, options);
     this.childOptions = Object.assign({
       cwd: this.options.cwd
