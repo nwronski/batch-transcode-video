@@ -34,7 +34,7 @@ var Progress = (function () {
   _createClass(Progress, [{
     key: 'start',
     value: function start() {
-      this.charm.display('bright').foreground('cyan').write('\nStarting batch operation...').display('reset').write('\n\n');
+      this.charm.display('bright').foreground('cyan').write('Starting batch operation...').display('reset').write('\n\n');
     }
   }, {
     key: 'finish',
