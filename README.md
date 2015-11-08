@@ -1,5 +1,11 @@
 # batch-transcode-video
 
+[![NPM Version Image](https://img.shields.io/npm/v/sqlite-parser.svg)](https://www.npmjs.com/package/batch-transcode-video)
+[![dependencies Status Image](https://img.shields.io/david/nwronski/batch-transcode-video.svg)](https://github.com/nwronski/batch-transcode-video/)
+[![devDependencies Status Image](https://img.shields.io/david/dev/nwronski/batch-transcode-video.svg)](https://github.com/nwronski/batch-transcode-video/)
+[![License Type Image](https://img.shields.io/github/license/nwronski/batch-transcode-video.svg)](https://github.com/nwronski/batch-transcode-video/blob/master/LICENSE)
+
+
 ![batch-transcode-video screenshot 1](https://cloud.githubusercontent.com/assets/5528249/11022434/025d9d4a-862d-11e5-8b0c-4134e7edd0d7.png)
 
 A command-line utility for recursively running batch cropping and transcoding operations on a directory of videos. This utility is a wrapper for a a utility called [transcode_video](https://github.com/donmelton/video_transcoding) which itself is a wrapper for trancoding utilities such as [HandbrakeCLI](https://handbrake.fr), [MKVToolNix](https://www.bunkus.org/videotools/mkvtoolnix/), and [mplayer](http://www.mplayerhq.hu/).
