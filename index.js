@@ -42,6 +42,7 @@ export default class BatchTranscodeVideo {
     this.status = BatchTranscodeVideo.INACTIVE;
     this.files = [];
     this.currentIndex = 0;
+    this.error = null;
     this._ready = this.createEntries();
     return this;
   }
@@ -50,11 +51,11 @@ export default class BatchTranscodeVideo {
     return glob(this.filePattern, {})
     .then((files) => {
       if (files.length === 0) {
-        throw new TranscodeError('No files found for search pattern provided.', filePattern);
+        throw new TranscodeError('No files found for search pattern provided.', this.filePattern);
       }
       return files;
     }, (err) => {
-      throw new TranscodeError('File system error encountered while scanning for media.', filePattern, err.message);
+      throw new TranscodeError('File system error encountered while scanning for media.', this.filePattern, err.message);
     })
     .map((file) => this.resolvePath(file), {
       concurrency: 3
@@ -86,11 +87,16 @@ export default class BatchTranscodeVideo {
       this.stopTime = this.lastTime;
       this.status = BatchTranscodeVideo.FINISHED;
       this.currentIndex = -1;
+      let errored = this.files.reduce((t, file) => t + (file.isErrored ? 1 : 0), 0);
+      if (errored > 0) {
+        this.status = BatchTranscodeVideo.ERRORED;
+      }
     })
     .catch((err) => {
       this.lastTime = Date.now();
       this.stopTime = this.lastTime;
       this.status = BatchTranscodeVideo.ERRORED;
+      this.error = err;
       throw err;
     });
   }
@@ -152,11 +158,11 @@ export default class BatchTranscodeVideo {
     return this.status === BatchTranscodeVideo.RUNNING;
   }
 
-  get isFinished() {
-    return this.isSuccess || this.isErrored;
+  get isDone() {
+    return this.isFinished || this.isErrored;
   }
 
-  get isSuccess() {
+  get isFinished() {
     return this.status === BatchTranscodeVideo.FINISHED;
   }
 

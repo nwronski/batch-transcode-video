@@ -95,6 +95,7 @@ var BatchTranscodeVideo = (function () {
     this.status = BatchTranscodeVideo.INACTIVE;
     this.files = [];
     this.currentIndex = 0;
+    this.error = null;
     this._ready = this.createEntries();
     return this;
   }
@@ -106,11 +107,11 @@ var BatchTranscodeVideo = (function () {
 
       return glob(this.filePattern, {}).then(function (files) {
         if (files.length === 0) {
-          throw new _libTranscodeErrorJs2['default']('No files found for search pattern provided.', filePattern);
+          throw new _libTranscodeErrorJs2['default']('No files found for search pattern provided.', _this.filePattern);
         }
         return files;
       }, function (err) {
-        throw new _libTranscodeErrorJs2['default']('File system error encountered while scanning for media.', filePattern, err.message);
+        throw new _libTranscodeErrorJs2['default']('File system error encountered while scanning for media.', _this.filePattern, err.message);
       }).map(function (file) {
         return _this.resolvePath(file);
       }, {
@@ -142,10 +143,17 @@ var BatchTranscodeVideo = (function () {
         _this2.stopTime = _this2.lastTime;
         _this2.status = BatchTranscodeVideo.FINISHED;
         _this2.currentIndex = -1;
+        var errored = _this2.files.reduce(function (t, file) {
+          return t + (file.isErrored ? 1 : 0);
+        }, 0);
+        if (errored > 0) {
+          _this2.status = BatchTranscodeVideo.ERRORED;
+        }
       })['catch'](function (err) {
         _this2.lastTime = Date.now();
         _this2.stopTime = _this2.lastTime;
         _this2.status = BatchTranscodeVideo.ERRORED;
+        _this2.error = err;
         throw err;
       });
     }
@@ -219,12 +227,12 @@ var BatchTranscodeVideo = (function () {
       return this.status === BatchTranscodeVideo.RUNNING;
     }
   }, {
-    key: 'isFinished',
+    key: 'isDone',
     get: function get() {
-      return this.isSuccess || this.isErrored;
+      return this.isFinished || this.isErrored;
     }
   }, {
-    key: 'isSuccess',
+    key: 'isFinished',
     get: function get() {
       return this.status === BatchTranscodeVideo.FINISHED;
     }
