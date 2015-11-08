@@ -23,6 +23,11 @@ export default class BatchTranscodeVideo {
   static get FINISHED() { return 2; }
   static get ERRORED() { return 3; }
 
+  /* This is the value to use before there is any data to calculate speed
+   * with estimateSpeed(). A value between 100 and 3000 seems reasonable.
+   */
+  static get EST_MS_PER_MB() { return 1000.0; }
+
   constructor(options, transcodeOptions) {
     options['curDir'] = process.cwd();
     options['input'] = path.relative(options['curDir'], options['input']);
@@ -114,7 +119,7 @@ export default class BatchTranscodeVideo {
       // ms/MB
       return (this.lastTime - this.startTime) / processed;
     }
-    return null;
+    return BatchTranscodeVideo.EST_MS_PER_MB;
   }
 
   get processedFileSizes() {

@@ -72,6 +72,15 @@ var BatchTranscodeVideo = (function () {
     get: function get() {
       return 3;
     }
+
+    /* This is the value to use before there is any data to calculate speed
+     * with estimateSpeed(). A value between 100 and 3000 seems reasonable.
+     */
+  }, {
+    key: 'EST_MS_PER_MB',
+    get: function get() {
+      return 1000.0;
+    }
   }]);
 
   function BatchTranscodeVideo(options, transcodeOptions) {
@@ -176,7 +185,7 @@ var BatchTranscodeVideo = (function () {
         // ms/MB
         return (this.lastTime - this.startTime) / processed;
       }
-      return null;
+      return BatchTranscodeVideo.EST_MS_PER_MB;
     }
   }, {
     key: 'processedFileSizes',

@@ -182,7 +182,6 @@ var VideoFile = (function () {
         var crop = useArgs.indexOf('--crop') + 1;
         if (crop > 0) {
           _this2.cropValue = useArgs[crop];
-          // say.notify(`Crop values detected for file: ${useArgs[crop]}.`, say.DEBUG, fileName, command);
         } else {
           throw new _transcodeErrorJs2['default']('Could not detect crop values. Skipping transcode for file.', _this2.fileName, command);
         }
@@ -200,7 +199,6 @@ var VideoFile = (function () {
 
       var args = _ref2.slice(1);
 
-      // say.notify('Starting transcoding operation for file.', say.DEBUG, fileName, args.join(' '));
       this._encode = new _childPromiseJs2['default']({
         cmd: cmd,
         args: args,
@@ -221,7 +219,6 @@ var VideoFile = (function () {
       return this._encode.start().then(function (output) {
         // Get total running time
         if (_this3.options['dryRun']) {
-          // say.notify('Finished processing file.', say.INFO, this.destFilePath, output);
           return false;
         } else {
           // Check the output from the trasncode to confirm it finished
@@ -259,7 +256,6 @@ var VideoFile = (function () {
       });
       return this._query.start().then(function (log) {
         _this4.encodeTime = (0, _utilJs.strToMilliseconds)(log.trim().match(timePattern)[1]);
-        // say.notify(`Total: ${this.totalTranscodeTime. Transcoding: ${this.encodeTime}`, say.WRITE, this.destFilePath, output);
       });
     }
   }, {
@@ -282,12 +278,11 @@ var VideoFile = (function () {
         return this.lastPercent;
       } else if (this.lastPercent <= 0) {
         // Determine whether we should guess
-        var est = this.getEstSpeed();
-        if (est !== null && this.isRunning) {
+        if (this.isRunning) {
+          var est = this.getEstSpeed();
           return this.currentTime / est / this.fileSize;
-        } else {
-          return 0;
         }
+        return 0;
       }
       return this.currentTime / this.totalTime;
     }
@@ -306,14 +301,12 @@ var VideoFile = (function () {
     get: function get() {
       if (this.lastPercent > 0) {
         return Math.max(this.totalTime - this.currentTime, 0);
-      } else {
-        var est = this.getEstSpeed();
-        if (est !== null && this.isRunning) {
-          return this.fileSize * est - this.currentTime;
-        } else {
-          return 0;
-        }
       }
+      if (this.isRunning) {
+        var est = this.getEstSpeed();
+        return this.fileSize * est - this.currentTime;
+      }
+      return 0;
     }
   }, {
     key: 'isReady',
