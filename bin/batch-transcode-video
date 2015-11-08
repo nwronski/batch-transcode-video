@@ -10,10 +10,6 @@ var _minimist = require('minimist');
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
-var _distLibHelpJs = require('../dist/lib/help.js');
-
-var _distLibHelpJs2 = _interopRequireDefault(_distLibHelpJs);
-
 var _distIndexCliJs = require('../dist/index-cli.js');
 
 var _distIndexCliJs2 = _interopRequireDefault(_distIndexCliJs);
@@ -43,11 +39,6 @@ var defs = {
 };
 
 var options = (0, _minimist2['default'])(process.argv.slice(2), defs);
-
-if (options['help']) {
-  console.log((0, _distLibHelpJs2['default'])());
-  process.exit(0);
-}
 
 var transcodeOptions = [];
 if (options['--'].length) {

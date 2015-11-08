@@ -22,7 +22,7 @@ exports['default'] = {
   debug: false,
   // Do not preserve relative directory structure in output directory
   flatten: false,
-  // Log only writes, errors, and finish (success, failure) message
+  // No progress or summary information logged to console.
   quiet: false,
   // Only try to transcode videos that do not exist in the output directory
   diff: false,

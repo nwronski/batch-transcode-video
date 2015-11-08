@@ -1,5 +1,4 @@
 import minimist from 'minimist';
-import help from '../dist/lib/help.js';
 import cli from '../dist/index-cli.js';
 import defaultOptions from '../dist/lib/default-options.js';
 const UNKNOWN_MESSAGE = `If you would like to supply custom options to
@@ -30,11 +29,6 @@ let defs = {
 };
 
 let options = minimist(process.argv.slice(2), defs);
-
-if (options['help']) {
-  console.log(help());
-  process.exit(0);
-}
 
 let transcodeOptions = [];
 if (options['--'].length) {
