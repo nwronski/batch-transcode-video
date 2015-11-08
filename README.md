@@ -18,7 +18,7 @@ npm i batch-transcode-video -g
 
 ## Usage
 
-For all the videos found in the `input` directory, this utility will determine if the source should be cropped (e.g.: it has black bars on the top and bottom of the source video) using `detect-crop` and then it will be transcoded using `transcode-video`. After the operation is completed for the current video, the encoding time will be displayed.
+For all the videos found in the `input` directory, this utility will determine if the source should be cropped (e.g.: it has black bars on the top and bottom of the source video) using `detect-crop` and then it will be transcoded using `transcode-video`. When in CLI mode, the progress and remaining time for the current file and the entire batch are displayed.
 
 This utility can recover from most errors, and as such, it will continue to **sequentially** process source files even if a previous transcoding operation has failed.
 
@@ -36,6 +36,37 @@ Transcoded files will be placed in the same directory as the source unless you s
 
 If you want to modify the search pattern that will be used to locate video in the `input` directory, you can specify a [glob](https://github.com/isaacs/node-glob) pattern using the `mask` option.
 
+### Non-binary Usage
+
+You can also directly require the underlying BatchTranscodeVideo video class. By default, the ES5-compatible files will be loaded when requiring this module. But, you can also require the raw ES2015 source files if you are running in an ES2015 capable environment.
+
+``` javascript
+// ES5 (default)
+var BatchTranscodeVideo = require('batch-transcode-video');
+var batch = new BatchTranscodeVideo({
+  input: './my/rawVideos/',
+  output: './my/transcodedVideos/'
+}, ['--dry-run']);
+```
+
+``` javascript
+// ES2015
+import BatchTranscodeVideo from './node_modules/batch-transcode-video/index.js';
+let batch = new BatchTranscodeVideo({
+  input: './my/rawVideos/',
+  output: './my/transcodedVideos/'
+}, ['--dry-run']);
+```
+
+Note: If you require the non-cli files, you will not see any formatted progress bars and summary output in the console. To require the CLI version of the library from your application, then simply `import` the `./index-cli.js` file instead of `index.js`.
+
+``` javascript
+import CliBatchTranscodeVideo from './node_modules/batch-transcode-video/index-cli.js';
+let batch = new CliBatchTranscodeVideo(options, transcodeOptions);
+// Start CLI mode
+batch.cli();
+```
+
 ## Options
 
 - `--help` _Flag: does not accept a value_ (Alias: `-h`)
@@ -49,16 +80,16 @@ If you want to modify the search pattern that will be used to locate video in th
 - `--diff` _Flag: does not accept a value_ (Default: `false`)
   Enable this option if you only want to transcode source files that do not exist already in the `output` folder.
   - If a destination file already exists in the `output` directory:
-    -  And `diff` is **enabled**, a message will be generated letting you know that the file was skipped (unless `quiet` is enabled).
+    -  And `diff` is **enabled**, a notice will be generated letting you know that the file was skipped (unless `quiet` is enabled).
     - And `diff` is **not enabled**, an error will be generated letting you know that the file already exists.
   - If you want to transcode a batch of videos in-place (i.e.: without specifying an `output` directory) then you should enabled this option to prevent errors from being generated when the source and destination file names have the same extension.
     - For example: trying to transcode a `.mkv` video into a `.mkv` video without supplying an external `output` directory will generate an error unless you specify the `diff` flag.
 - `--debug` _Flag: does not accept a value_ (Default: `false`)
-  Enable verbose logging mode. Will allow you to see the output from the child processes spawned for `detect-crop` and `transcode-video`.
+  Enable verbose logging mode. Disables progress indicator and then streams child process to master `stdout` for `detect-crop` and `transcode-video`.
 - `--flatten` _Flag: does not accept a value_ (Default: `false`)
   Do not preserve relative directory structure in output directory. If this is enabled, the base output folder will contain all transcoded videos. Note: this option has no effect unless you specify an `output` directory.
 - `--quiet` _Flag: does not accept a value_ (Default: `false`)
-  Log only file writes, errors, and finish (e.g.: success, failure) messages.
+  Prevents **any** logging to stdout and will only exit `0` on success or `1` on error
 
 ### Providing options to transcode-video
 

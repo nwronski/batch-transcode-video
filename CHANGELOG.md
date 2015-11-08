@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v1.0.0] - 2015-11-08
+### Added
+- Added back `--quiet` and `--debug` flags to new ES2015 version of CLI.
+  - `--debug` mode disables progress indicator and then streams child process to master stdout.
+  - `--quiet` mode now prevents **any** logging to stdout and will only exit `0` on success or `1` on error
+
+### Fixed
+- Lots of cleanup for Progress class.
+- Get `VideoFile` class working with Windows again.
+- Fixed broken help flag in CLI mode.
+- Move Windows-specific functions to `util.js`.
+- Fixed false positive errors in Windows environment.
+- Fixed glob error message details.
+
 ## [v1.0.0-beta] - 2015-11-07
 ### Added
 - You can now use the module:
@@ -76,7 +90,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0-beta...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0...HEAD
+[v1.0.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0-beta...v1.0.0
 [v1.0.0-beta]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.1...v1.0.0-beta
 [v0.3.1]: https://github.com/nwronski/batch-transcode-video/compare/v0.3.0...v0.3.1
 [v0.3.0]: https://github.com/nwronski/batch-transcode-video/compare/v0.2.1...v0.3.0

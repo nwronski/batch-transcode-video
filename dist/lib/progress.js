@@ -21,7 +21,7 @@ var Progress = (function () {
     this.firstPad = ' '.repeat(this.firstTab);
     this.quiet = quiet;
     this.color = {
-      skipped: 'cyan',
+      skipped: 'blue',
       written: 'green',
       errored: 'red',
       queued: 'yellow'

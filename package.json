@@ -1,7 +1,7 @@
 {
   "name": "batch-transcode-video",
-  "version": "1.0.0-beta",
-  "description": "Batch transcode videos using the video_transcoding gem",
+  "version": "1.0.0",
+  "description": "Batch transcode videos using the video_transcoding gem.",
   "contributors": [
     "Nick Wronski (https://github.com/nwronski)"
   ],
