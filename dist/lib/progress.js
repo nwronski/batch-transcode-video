@@ -176,38 +176,41 @@ var Progress = (function () {
       }, 0);
       this.charm.display('bright').foreground('cyan').write(Progress.labelPad(label + ': ', this.firstTab));
       var total = 100.0 * size;
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      if (types.length !== 0) {
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
-      try {
-        for (var _iterator3 = types[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var type = _step3.value;
-
-          var percent = counts[type] / totalCount;
-          var printPercent = (0, _utilJs.fractionToPercent)(percent);
-          var colored = Math.round(Number.parseFloat(printPercent) * size);
-          if (type === types.slice(-1)[0]) {
-            colored = total;
-          }
-          total -= colored;
-          this.charm.display('reset').background(this.color[type]).write(' '.repeat(colored));
-        }
-      } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-      } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-            _iterator3['return']();
+          for (var _iterator3 = types[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var type = _step3.value;
+
+            var percent = counts[type] / totalCount;
+            var printPercent = (0, _utilJs.fractionToPercent)(percent);
+            var colored = Math.round(Number.parseFloat(printPercent) * size);
+            if (type === types.slice(-1)[0]) {
+              colored = total;
+            }
+            total -= colored;
+            this.charm.display('reset').background(this.color[type]).write(' '.repeat(colored));
           }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+              _iterator3['return']();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
           }
         }
+      } else {
+        this.charm.display('reset').background('black').write(' '.repeat(total));
       }
-
       this.charm.display('reset').display('bright').write('  ' + extra + '\n');
     }
   }, {
