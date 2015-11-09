@@ -76,15 +76,20 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
   finalState() {
     let processed = this.processedFileSizes;
     let total = this.totalFileSizes;
+    let seconds = this.totalTime / 1000.0;
     // TODO: Not sure if this is working correctly
-    let speed = processed / (this.totalTime / 1000.0);
+    let speed = processed / seconds;
+    let workCount = this.files.reduce((t, file) => t + file.currentPercent, 0);
+    let average = workCount > 0 ? (this.totalTime / workCount) : 0;
     return {
       files: this.files,
       processed: processed.toFixed(2),
       total: total.toFixed(2),
       speed: speed.toFixed(2),
       success: this.isFinished,
-      error: this.error
+      error: this.error,
+      elapsed: this.totalTime,
+      average
     };
   }
 

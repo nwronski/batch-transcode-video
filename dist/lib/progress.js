@@ -57,7 +57,8 @@ var Progress = (function () {
           var file = _step.value;
 
           var type = Progress.getStatusName(file, true);
-          this.bulletPoint('' + Progress.labelPad(type.toUpperCase() + ': ', 10) + Progress.truncateStr(file.fileName, 0.75, 10), this.color[type], this.bold[type]);
+          var bitrate = file.encodeBitrate !== null ? ' (' + file.encodeBitrate + ')' : '';
+          this.bulletPoint('' + Progress.labelPad(type.toUpperCase() + ': ', 10) + Progress.truncateStr(file.fileName, 0.5, 0) + bitrate, this.color[type], this.bold[type]);
           if (file.error !== null) {
             // Print error message
             this.charm.display('reset').foreground('white').write(file.error + '\n');
@@ -80,7 +81,9 @@ var Progress = (function () {
 
       this.charm.write('\n');
       this.colorBar('Summary', counts, state.files.length + ' file' + (state.files.length !== 1 ? 's' : ''));
-      this.truncatedLine('Processed', state.processed + ' MB of ' + state.total + ' total MB');
+      this.fileStatusLine(counts);
+      this.truncatedLine('Processed', state.processed + ' MB of ' + state.total + ' total MB', state.speed + ' MB/s');
+      this.truncatedLine('Time', 'Total ' + (0, _utilJs.millisecondsToStr)(state.elapsed) + ' (Avg: ' + (0, _utilJs.millisecondsToStr)(state.average) + ')');
       this.charm.write('\n');
       var finalMsg = state.success ? 'Finished without error.' : 'Finished with errors.';
       this.bulletPoint(finalMsg, state.success ? 'green' : 'red', true, '=>');

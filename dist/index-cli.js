@@ -152,15 +152,22 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
     value: function finalState() {
       var processed = this.processedFileSizes;
       var total = this.totalFileSizes;
+      var seconds = this.totalTime / 1000.0;
       // TODO: Not sure if this is working correctly
-      var speed = processed / (this.totalTime / 1000.0);
+      var speed = processed / seconds;
+      var workCount = this.files.reduce(function (t, file) {
+        return t + file.currentPercent;
+      }, 0);
+      var average = workCount > 0 ? this.totalTime / workCount : 0;
       return {
         files: this.files,
         processed: processed.toFixed(2),
         total: total.toFixed(2),
         speed: speed.toFixed(2),
         success: this.isFinished,
-        error: this.error
+        error: this.error,
+        elapsed: this.totalTime,
+        average: average
       };
     }
   }, {

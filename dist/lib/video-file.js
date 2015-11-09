@@ -45,7 +45,8 @@ var mkdirp = _bluebird2['default'].promisify(_mkdirp3['default']);
 var progressPattern = 'Encoding: task';
 var progressPercent = /(\d{1,3}\.\d{1,2})\s*\%/;
 var timePattern = '([0-9]{2}\:[0-9]{2}\:[0-9]{2})';
-var handbrakeLog = new RegExp('^' + timePattern);
+var handbrakeLogTime = new RegExp('^' + timePattern);
+var handbrakeLogBitrate = /^[0-9]+\.[0-9]+\s[^\s]+/i;
 var handbrakeFinish = new RegExp('Encode done![\\n\\s]*HandBrake has exited.[\\s\\n]*Elapsed time:\\s+' + timePattern, 'mi');
 
 var VideoFile = (function () {
@@ -241,18 +242,18 @@ var VideoFile = (function () {
       var _this4 = this;
 
       if (!didFinish) {
-        this.encodeTime = null;
+        this.encodeBitrate = null;
         return _bluebird2['default'].resolve(true);
       }
       this._query = new _childPromiseJs2['default']({
         cmd: 'query-handbrake-log',
-        args: ['time', this.destFilePath + '.log'],
+        args: ['bitrate', this.destFilePath + '.log'],
         fileName: this.destFileName,
         cwd: this.options['curDir']
       });
       return this._query.start().then(function (log) {
-        var matches = log.trim().match(handbrakeLog);
-        _this4.encodeTime = matches !== null ? (0, _utilJs.strToMilliseconds)(matches[1]) : false;
+        var matches = log.trim().match(handbrakeLogBitrate);
+        _this4.encodeBitrate = matches !== null ? matches[0] : false;
       });
     }
   }, {
