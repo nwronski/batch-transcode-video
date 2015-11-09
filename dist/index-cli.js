@@ -153,7 +153,6 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
       var processed = this.processedFileSizes;
       var total = this.totalFileSizes;
       var seconds = this.totalTime / 1000.0;
-      // TODO: Not sure if this is working correctly
       var speed = processed / seconds;
       var workCount = this.files.reduce(function (t, file) {
         return t + file.currentPercent;

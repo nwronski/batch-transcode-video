@@ -113,10 +113,12 @@ var Progress = (function () {
       var _iteratorError2 = undefined;
 
       try {
-        for (var _iterator2 = Object.keys(counts)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        for (var _iterator2 = Object.keys(counts).filter(function (c) {
+          return counts[c] > 0;
+        })[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
           var type = _step2.value;
 
-          this.charm.display('reset').display('bright').foreground(this.color[type]).write(type[0].toUpperCase() + ': ').display('reset').write(counts[type] + '  ');
+          this.charm.display('reset').display('bright').foreground(this.color[type]).write(type.slice(0, 2).toUpperCase() + ': ').display('reset').write(counts[type] + '  ');
         }
       } catch (err) {
         _didIteratorError2 = true;
