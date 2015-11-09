@@ -114,7 +114,7 @@ batch.cli();
 
 ### Providing options to transcode-video
 
-If you want to provide custom options to `trancode-video` then you can place them at the end of your normal options following a `--` and they will be passed directly to the `transcode-video` program. Find a list
+If you want to provide custom options to `trancode-video` then you can place them at the end of your normal options following a `--` and they will be passed directly to the `transcode-video` program. Find more information about the allowed options at [the transcode_video README](https://github.com/donmelton/video_transcoding#using-transcode-video).
 
 ```
 batch-transcode-video --input "video/" --output "transcoded/" --debug -- --dry-run
