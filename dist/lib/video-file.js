@@ -55,7 +55,7 @@ function cropDelta(command) {
     return null;
   }
   return cropRaw[1].split(':').reduce(function (t, val) {
-    return t + parseInt(val, 10);
+    return t + Number.parseInt(val, 10);
   }, 0);
 }
 
