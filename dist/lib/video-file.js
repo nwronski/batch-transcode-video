@@ -118,6 +118,7 @@ var VideoFile = (function () {
     this._query = null;
 
     this.error = null;
+    this.encodeBitrate = null;
 
     this.fileName = _path2['default'].basename(filePath);
     this.filePathDir = _path2['default'].dirname(filePath);
@@ -272,7 +273,6 @@ var VideoFile = (function () {
       var _this4 = this;
 
       if (!didFinish) {
-        this.encodeBitrate = null;
         return _bluebird2['default'].resolve(true);
       }
       this._query = new _childPromiseJs2['default']({
@@ -283,7 +283,11 @@ var VideoFile = (function () {
       });
       return this._query.start().then(function (log) {
         var matches = log.trim().match(handbrakeLogBitrate);
-        _this4.encodeBitrate = matches !== null ? matches[0] : false;
+        if (matches !== null) {
+          _this4.encodeBitrate = matches[0];
+        } else {
+          throw new _transcodeErrorJs2['default']('Could not confirm from log file that transcode succeeded.', _this4.destFileName, log);
+        }
       });
     }
   }, {
