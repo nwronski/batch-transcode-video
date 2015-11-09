@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v1.0.3] - 2015-11-09
+### Added
+- New metrics added to CLI mode summary output:
+  - Show average bitrate for successful writes.
+  - Show total and average running time.
+  - Show speed in MB/s.
+- New `--force` flag. If crop detection returns conflicting crop values then just use the least extreme crop value and continue transcoding.
+
 ## [v1.0.2] - 2015-11-08
 ### Fixed
 - Fixed `query-handbrake-log` file path bug in Windows.
@@ -105,7 +113,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.2...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.3...HEAD
+[v1.0.3]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0...v1.0.1
 [v1.0.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0-beta...v1.0.0

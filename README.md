@@ -109,6 +109,8 @@ batch.cli();
   Do not preserve relative directory structure in output directory. If this is enabled, the base output folder will contain all transcoded videos. Note: this option has no effect unless you specify an `output` directory.
 - `--quiet` _Flag: does not accept a value_ (Default: `false`)
   Prevents **any** logging to stdout and will only exit `0` on success or `1` on error
+- `--force` _Flag: does not accept a value_ (Default: `false`)
+  If crop detection returns conflicting crop values then just use the least extreme crop value and continue transcoding.
 
 ### Providing options to transcode-video
 
