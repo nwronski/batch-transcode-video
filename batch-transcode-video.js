@@ -14,7 +14,7 @@ let defs = {
     help: 'h'
   },
   boolean: [
-    'debug', 'quiet', 'flatten', 'diff', 'help'
+    'debug', 'quiet', 'flatten', 'diff', 'help', 'force'
   ],
   string: [
     'input', 'output', 'mask'

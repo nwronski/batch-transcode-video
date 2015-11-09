@@ -40,6 +40,9 @@ var args = [{
 }, {
   arg: 'quiet',
   desc: 'Do not log output messages to command line, only exit 0 if successful or 1 if there are errors. This will disable the progress bars that display the current progress and remaining time estimates and also the summary output (writes, errors, stats) at end of process.'
+}, {
+  arg: 'force',
+  desc: 'If crop detection returns conflicting crop values then just use the least extreme crop value and continue transcoding.'
 }];
 
 function help(charm) {

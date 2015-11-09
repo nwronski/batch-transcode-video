@@ -27,7 +27,7 @@ var defs = {
     mask: 'm',
     help: 'h'
   },
-  boolean: ['debug', 'quiet', 'flatten', 'diff', 'help'],
+  boolean: ['debug', 'quiet', 'flatten', 'diff', 'help', 'force'],
   string: ['input', 'output', 'mask'],
   'default': _distLibDefaultOptionsJs2['default'],
   unknown: function unknown(arg) {

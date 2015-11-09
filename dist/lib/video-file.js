@@ -48,6 +48,27 @@ var timePattern = '([0-9]{2}\:[0-9]{2}\:[0-9]{2})';
 var handbrakeLogTime = new RegExp('^' + timePattern);
 var handbrakeLogBitrate = /^[0-9]+\.[0-9]+\s[^\s]+/i;
 var handbrakeFinish = new RegExp('Encode done![\\n\\s]*HandBrake has exited.[\\s\\n]*Elapsed time:\\s+' + timePattern, 'mi');
+var cropValuePattern = /\-{2}crop\s+([0-9]+\:[0-9]+\:[0-9]+\:[0-9]+)/i;
+function cropDelta(command) {
+  var cropRaw = command.match(cropValuePattern);
+  if (cropRaw === null) {
+    return null;
+  }
+  return cropRaw[1].split(':').reduce(function (t, val) {
+    return t + parseInt(val, 10);
+  }, 0);
+}
+
+function cropCompareFunc(a, b) {
+  var cropA = cropDelta(a);
+  var cropB = cropDelta(b);
+  if (cropA === null) {
+    return 1;
+  } else if (cropB === null) {
+    return -1;
+  }
+  return cropA >= cropB ? 1 : -1;
+}
 
 var VideoFile = (function () {
   _createClass(VideoFile, null, [{
@@ -173,7 +194,16 @@ var VideoFile = (function () {
         if (useCommands.length === 0) {
           throw new _transcodeErrorJs2['default']('Crop detection failed. Skipping transcode for file.', _this2.fileName, output);
         } else if (useCommands.length > 1) {
-          throw new _transcodeErrorJs2['default']('Crop detection returned conflicting results.', _this2.fileName, useCommands.join('\n'));
+          if (_this2.options['force']) {
+            // Pick the least extreme crop
+            useCommands.sort(cropCompareFunc);
+          } else {
+            var cropResults = useCommands.map(function (val) {
+              var m = val.match(cropValuePattern);
+              return m !== null ? m[1] : '(unknown)';
+            }).join(', ');
+            throw new _transcodeErrorJs2['default']('Crop detection returned conflicting results: ' + cropResults + '.', _this2.fileName, useCommands.join('\n'));
+          }
         }
         return useCommands[0];
       }).then(function (command) {

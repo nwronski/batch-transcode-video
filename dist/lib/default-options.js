@@ -26,6 +26,8 @@ exports['default'] = {
   quiet: false,
   // Only try to transcode videos that do not exist in the output directory
   diff: false,
+  // If crop detection returns multiple values then take the least extreme crop
+  force: false,
   help: false
 };
 module.exports = exports['default'];
