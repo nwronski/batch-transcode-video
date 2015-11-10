@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v1.0.4] - 2015-11-09
+### Fixed
+- Do not show counts of 0 in `fileStatusLine()`.
+- Do not show bitrate in summary output unless write was successful.
+
 ## [v1.0.3] - 2015-11-09
 ### Added
 - New metrics added to CLI mode summary output:
@@ -113,7 +118,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.3...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.4...HEAD
+[v1.0.4]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.3...v1.0.4
 [v1.0.3]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.0...v1.0.1
