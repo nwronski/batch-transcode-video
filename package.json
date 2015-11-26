@@ -1,6 +1,6 @@
 {
   "name": "batch-transcode-video",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Batch transcode videos using the video_transcoding gem.",
   "contributors": [
     "Nick Wronski (https://github.com/nwronski)"
@@ -38,7 +38,6 @@
     "glob": "^5.0.15",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "path": "^0.12.7",
     "shell-quote": "^1.4.3"
   },
   "devDependencies": {
