@@ -28,6 +28,9 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
       this.onError(err);
     });
     process.on('exit', () => {
+      if (!this.isFinished) {
+        this.status = BatchTranscodeVideo.ERRORED;
+      }
       if (this.files && this.files.length) {
         for (let file of this.files) {
           try {

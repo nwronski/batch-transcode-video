@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
+## [v1.0.5] - 2015-11-25
+### Fixed
+- Summary calculations after `SIGINT` (`ctrl` + `c`) signal were incorrect.
+- `BatchTranscodeVideo` reported `isRunning` as `true` after a `SIGINT`.
+
 ## [v1.0.4] - 2015-11-09
 ### Fixed
 - Do not show counts of 0 in `fileStatusLine()`.
@@ -118,7 +123,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.4...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.5...HEAD
+[v1.0.5]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.4...v1.0.5
 [v1.0.4]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.3...v1.0.4
 [v1.0.3]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.1...v1.0.2

@@ -218,7 +218,7 @@ var BatchTranscodeVideo = (function () {
   }, {
     key: 'totalTime',
     get: function get() {
-      return this.isRunning ? this.currentTime / this.currentPercent : this.stopTime - this.startTime;
+      return this.isRunning ? this.currentTime / this.currentPercent : (this.stopTime || Date.now()) - this.startTime;
     }
   }, {
     key: 'remainingTime',

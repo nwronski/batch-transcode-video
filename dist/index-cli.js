@@ -79,6 +79,9 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
         _this.onError(err);
       });
       process.on('exit', function () {
+        if (!_this.isFinished) {
+          _this.status = _indexJs2['default'].ERRORED;
+        }
         if (_this.files && _this.files.length) {
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
