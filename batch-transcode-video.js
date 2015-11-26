@@ -1,6 +1,7 @@
 import minimist from 'minimist';
 import cli from '../dist/index-cli.js';
 import defaultOptions from '../dist/lib/default-options.js';
+const VERSION = '@@VERSION';
 const UNKNOWN_MESSAGE = `If you would like to supply custom options to
  transcode-video then put them at end of the command
  after a double dash "--". For example to pass the
@@ -11,10 +12,11 @@ let defs = {
     input: 'i',
     output: 'o',
     mask: 'm',
-    help: 'h'
+    help: 'h',
+    version: 'v'
   },
   boolean: [
-    'debug', 'quiet', 'flatten', 'diff', 'help', 'force'
+    'debug', 'quiet', 'flatten', 'diff', 'help', 'force', 'version'
   ],
   string: [
     'input', 'output', 'mask'
@@ -29,6 +31,11 @@ let defs = {
 };
 
 let options = minimist(process.argv.slice(2), defs);
+
+if (options['version'] === true) {
+  console.log(`batch-transcode-video v${VERSION}`);
+  process.exit(0);
+}
 
 let transcodeOptions = [];
 if (options['--'].length) {
