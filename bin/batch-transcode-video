@@ -4,19 +4,19 @@ process.title = 'batch-transcode-video';
 
 'use strict';
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 var _minimist = require('minimist');
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
-var _distIndexCliJs = require('../dist/index-cli.js');
+var _indexCli = require('../dist/index-cli.js');
 
-var _distIndexCliJs2 = _interopRequireDefault(_distIndexCliJs);
+var _indexCli2 = _interopRequireDefault(_indexCli);
 
-var _distLibDefaultOptionsJs = require('../dist/lib/default-options.js');
+var _defaultOptions = require('../dist/lib/default-options.js');
 
-var _distLibDefaultOptionsJs2 = _interopRequireDefault(_distLibDefaultOptionsJs);
+var _defaultOptions2 = _interopRequireDefault(_defaultOptions);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var UNKNOWN_MESSAGE = 'If you would like to supply custom options to\n transcode-video then put them at end of the command\n after a double dash "--". For example to pass the\n "--dry-run" command to transcode-video:'.replace(/\n+/g, '');
 var defs = {
@@ -25,11 +25,11 @@ var defs = {
     input: 'i',
     output: 'o',
     mask: 'm',
-    help: 'h'
+    help: 'h',
   },
-  boolean: ['debug', 'quiet', 'flatten', 'diff', 'help', 'force'],
+  boolean: ['debug', 'quiet', 'flatten', 'diff', 'help', 'force', 'version'],
   string: ['input', 'output', 'mask'],
-  'default': _distLibDefaultOptionsJs2['default'],
+  default: _defaultOptions2.default,
   unknown: function unknown(arg) {
     console.log('ERROR:\tUnrecognized argument ' + arg + ' provided.');
     console.log(UNKNOWN_MESSAGE);
@@ -38,7 +38,7 @@ var defs = {
   }
 };
 
-var options = (0, _minimist2['default'])(process.argv.slice(2), defs);
+var options = (0, _minimist2.default)(process.argv.slice(2), defs);
 
 var transcodeOptions = [];
 if (options['--'].length) {
@@ -46,4 +46,4 @@ if (options['--'].length) {
   delete options['--'];
 }
 
-new _distIndexCliJs2['default'](options, transcodeOptions).cli();
+new _indexCli2.default(options, transcodeOptions).cli();

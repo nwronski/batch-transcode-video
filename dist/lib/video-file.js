@@ -1,16 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var _path = require('path');
 
@@ -20,9 +14,9 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
-var _transcodeErrorJs = require('./transcode-error.js');
+var _transcodeError = require('./transcode-error.js');
 
-var _transcodeErrorJs2 = _interopRequireDefault(_transcodeErrorJs);
+var _transcodeError2 = _interopRequireDefault(_transcodeError);
 
 var _fs = require('fs');
 
@@ -30,17 +24,23 @@ var _mkdirp2 = require('mkdirp');
 
 var _mkdirp3 = _interopRequireDefault(_mkdirp2);
 
-var _childPromiseJs = require('./child-promise.js');
+var _childPromise = require('./child-promise.js');
 
-var _childPromiseJs2 = _interopRequireDefault(_childPromiseJs);
+var _childPromise2 = _interopRequireDefault(_childPromise);
 
 var _shellQuote = require('shell-quote');
 
-var _utilJs = require('./util.js');
+var _util = require('./util.js');
 
-var stat = _bluebird2['default'].promisify(_fs.stat);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var mkdirp = _bluebird2['default'].promisify(_mkdirp3['default']);
+function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var stat = _bluebird2.default.promisify(_fs.stat);
+
+var mkdirp = _bluebird2.default.promisify(_mkdirp3.default);
 
 var progressPattern = 'Encoding: task';
 var progressPercent = /(\d{1,3}\.\d{1,2})\s*\%/;
@@ -120,19 +120,19 @@ var VideoFile = (function () {
     this.error = null;
     this.encodeBitrate = null;
 
-    this.fileName = _path2['default'].basename(filePath);
-    this.filePathDir = _path2['default'].dirname(filePath);
-    this.filePathRel = _path2['default'].relative(this.options['curDir'], filePath);
-    this.destFileName = _path2['default'].basename(this.fileName, _path2['default'].extname(this.fileName)) + '.' + this.options['destExt'];
+    this.fileName = _path2.default.basename(filePath);
+    this.filePathDir = _path2.default.dirname(filePath);
+    this.filePathRel = _path2.default.relative(this.options['curDir'], filePath);
+    this.destFileName = _path2.default.basename(this.fileName, _path2.default.extname(this.fileName)) + '.' + this.options['destExt'];
     this.destFileDir = this.options['output'] ? !this.options['flatten'] ?
     // Add relative paths from --input to filePathDir when --o given
-    _path2['default'].resolve(this.options['output'], _path2['default'].relative(this.options['input'], this.filePathDir)) :
+    _path2.default.resolve(this.options['output'], _path2.default.relative(this.options['input'], this.filePathDir)) :
     // --flatten option so do not add relative path
     this.options['output'] :
     // Output is same place a input
     this.filePathDir;
-    this.destFilePath = _path2['default'].normalize(this.destFileDir + _path2['default'].sep + this.destFileName);
-    this.destFilePathRel = _path2['default'].relative(this.options['curDir'], this.destFilePath);
+    this.destFilePath = _path2.default.normalize(this.destFileDir + _path2.default.sep + this.destFileName);
+    this.destFilePathRel = _path2.default.relative(this.options['curDir'], this.destFilePath);
     this.fileSize = Number.parseInt(stats.size / 1000000.0, 10);
     this._ready = this._resolveDest();
     return this;
@@ -145,13 +145,13 @@ var VideoFile = (function () {
 
       return this._ready.then(function () {
         if (!_this.isReady) {
-          throw new _transcodeErrorJs2['default']('File cannot be processed again.', _this.fileName);
+          throw new _transcodeError2.default('File cannot be processed again.', _this.fileName);
         } else if (_this.destFileExists) {
           if (_this.options['diff']) {
             _this.status = VideoFile.SKIPPED;
-            return _bluebird2['default'].resolve(false);
+            return _bluebird2.default.resolve(false);
           } else {
-            throw new _transcodeErrorJs2['default']('File already exists in output directory.', _this.fileName);
+            throw new _transcodeError2.default('File already exists in output directory.', _this.fileName);
           }
         } else {
           _this.startTime = Date.now();
@@ -168,7 +168,7 @@ var VideoFile = (function () {
             return true;
           });
         }
-      })['catch'](function (e) {
+      }).catch(function (e) {
         _this.error = e;
         _this.status = VideoFile.ERRORED;
       });
@@ -178,7 +178,7 @@ var VideoFile = (function () {
     value: function _detectCrop() {
       var _this2 = this;
 
-      this._crop = new _childPromiseJs2['default']({
+      this._crop = new _childPromise2.default({
         cmd: 'detect-crop',
         args: [this.filePathRel],
         fileName: this.fileName,
@@ -193,7 +193,7 @@ var VideoFile = (function () {
           );
         });
         if (useCommands.length === 0) {
-          throw new _transcodeErrorJs2['default']('Crop detection failed. Skipping transcode for file.', _this2.fileName, output);
+          throw new _transcodeError2.default('Crop detection failed. Skipping transcode for file.', _this2.fileName, output);
         } else if (useCommands.length > 1) {
           if (_this2.options['force']) {
             // Pick the least extreme crop
@@ -203,7 +203,7 @@ var VideoFile = (function () {
               var m = val.match(cropValuePattern);
               return m !== null ? m[1] : '(unknown)';
             }).join(', ');
-            throw new _transcodeErrorJs2['default']('Crop detection returned conflicting results: ' + cropResults + '.', _this2.fileName, useCommands.join('\n'));
+            throw new _transcodeError2.default('Crop detection returned conflicting results: ' + cropResults + '.', _this2.fileName, useCommands.join('\n'));
           }
         }
         return useCommands[0];
@@ -215,7 +215,7 @@ var VideoFile = (function () {
         if (crop > 0) {
           _this2.cropValue = useArgs[crop];
         } else {
-          throw new _transcodeErrorJs2['default']('Could not detect crop values. Skipping transcode for file.', _this2.fileName, command);
+          throw new _transcodeError2.default('Could not detect crop values. Skipping transcode for file.', _this2.fileName, command);
         }
         return useArgs;
       });
@@ -231,7 +231,7 @@ var VideoFile = (function () {
 
       var args = _ref2.slice(1);
 
-      this._encode = new _childPromiseJs2['default']({
+      this._encode = new _childPromise2.default({
         cmd: cmd,
         args: args,
         fileName: this.destFileName,
@@ -257,11 +257,11 @@ var VideoFile = (function () {
           var transcodeStatus = output.match(handbrakeFinish);
           if (transcodeStatus === null) {
             _this3.totalEncodeTime = null;
-            throw new _transcodeErrorJs2['default']('Transcode probably did not succeed for file.', _this3.destFileName, output);
+            throw new _transcodeError2.default('Transcode probably did not succeed for file.', _this3.destFileName, output);
           } else {
             _this3.lastTime = Date.now();
             _this3.lastPercent = 1.0;
-            _this3.totalEncodeTime = (0, _utilJs.strToMilliseconds)(transcodeStatus[1]);
+            _this3.totalEncodeTime = (0, _util.strToMilliseconds)(transcodeStatus[1]);
           }
           return true;
         }
@@ -273,9 +273,9 @@ var VideoFile = (function () {
       var _this4 = this;
 
       if (!didFinish) {
-        return _bluebird2['default'].resolve(true);
+        return _bluebird2.default.resolve(true);
       }
-      this._query = new _childPromiseJs2['default']({
+      this._query = new _childPromise2.default({
         cmd: 'query-handbrake-log',
         args: ['bitrate', this.destFilePath + '.log'],
         fileName: this.destFileName,
@@ -286,7 +286,7 @@ var VideoFile = (function () {
         if (matches !== null) {
           _this4.encodeBitrate = matches[0];
         } else {
-          throw new _transcodeErrorJs2['default']('Could not confirm from log file that transcode succeeded.', _this4.destFileName, log);
+          throw new _transcodeError2.default('Could not confirm from log file that transcode succeeded.', _this4.destFileName, log);
         }
       });
     }
@@ -375,6 +375,5 @@ var VideoFile = (function () {
   return VideoFile;
 })();
 
-exports['default'] = VideoFile;
+exports.default = VideoFile;
 ;
-module.exports = exports['default'];

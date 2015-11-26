@@ -1,16 +1,12 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-var _utilJs = require('./util.js');
+var _util = require('./util.js');
 
 var _bluebird = require('bluebird');
 
@@ -18,9 +14,13 @@ var _bluebird2 = _interopRequireDefault(_bluebird);
 
 var _child_process = require('child_process');
 
-var _transcodeErrorJs = require('./transcode-error.js');
+var _transcodeError = require('./transcode-error.js');
 
-var _transcodeErrorJs2 = _interopRequireDefault(_transcodeErrorJs);
+var _transcodeError2 = _interopRequireDefault(_transcodeError);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var _debug = false;
 
@@ -39,7 +39,7 @@ var ChildPromise = (function () {
     _classCallCheck(this, ChildPromise);
 
     // cmd, args, file, dir, mute, callback
-    var isWindows = (0, _utilJs.isWindows)();
+    var isWindows = (0, _util.isWindows)();
     this.options = Object.assign({
       fileName: '',
       cmd: '',
@@ -66,7 +66,7 @@ var ChildPromise = (function () {
     value: function start() {
       var _this = this;
 
-      this._promise = new _bluebird2['default'](function (a, r) {
+      this._promise = new _bluebird2.default(function (a, r) {
         _this._accept = a;
         _this._reject = r;
         var _options = _this.options;
@@ -76,7 +76,7 @@ var ChildPromise = (function () {
 
         _this._child = isWindows ?
         // Use exec() and special escape syntax for Windows
-        (0, _child_process.exec)((0, _utilJs.windowsCommand)(cmd, args), _this.childOptions) :
+        (0, _child_process.exec)((0, _util.windowsCommand)(cmd, args), _this.childOptions) :
         // Use spawn() and normal syntax for non-Windows
         (0, _child_process.spawn)(cmd, args, _this.childOptions);
 
@@ -122,7 +122,7 @@ var ChildPromise = (function () {
     key: 'errHandler',
     value: function errHandler(err) {
       var additional = err.toString().trim();
-      this._reject(new _transcodeErrorJs2['default']('Child process encountered an error.', this.options.fileName, additional));
+      this._reject(new _transcodeError2.default('Child process encountered an error.', this.options.fileName, additional));
     }
   }, {
     key: 'closeHandler',
@@ -155,6 +155,5 @@ var ChildPromise = (function () {
   return ChildPromise;
 })();
 
-exports['default'] = ChildPromise;
+exports.default = ChildPromise;
 ;
-module.exports = exports['default'];

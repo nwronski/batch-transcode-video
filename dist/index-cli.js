@@ -1,42 +1,42 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
-var _indexJs = require('./index.js');
+var _index = require('./index.js');
 
-var _indexJs2 = _interopRequireDefault(_indexJs);
+var _index2 = _interopRequireDefault(_index);
 
-var _libProgressJs = require('./lib/progress.js');
+var _progress = require('./lib/progress.js');
 
-var _libProgressJs2 = _interopRequireDefault(_libProgressJs);
+var _progress2 = _interopRequireDefault(_progress);
 
-var _libHelpJs = require('./lib/help.js');
+var _help = require('./lib/help.js');
 
-var _libHelpJs2 = _interopRequireDefault(_libHelpJs);
+var _help2 = _interopRequireDefault(_help);
 
 var _charm2 = require('charm');
 
 var _charm3 = _interopRequireDefault(_charm2);
 
-var _libChildPromiseJs = require('./lib/child-promise.js');
+var _childPromise = require('./lib/child-promise.js');
 
-var _libChildPromiseJs2 = _interopRequireDefault(_libChildPromiseJs);
+var _childPromise2 = _interopRequireDefault(_childPromise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   _inherits(CliBatchTranscodeVideo, _BatchTranscodeVideo);
@@ -56,39 +56,40 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   function CliBatchTranscodeVideo(options, transcodeOptions) {
     _classCallCheck(this, CliBatchTranscodeVideo);
 
-    _get(Object.getPrototypeOf(CliBatchTranscodeVideo.prototype), 'constructor', this).call(this, options, transcodeOptions);
-    this.timer = null;
-    this.files = [];
-    this.charm = (0, _charm3['default'])(process);
-    if (this.options['help'] === true) {
-      (0, _libHelpJs2['default'])(this.charm);
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CliBatchTranscodeVideo).call(this, options, transcodeOptions));
+
+    _this.timer = null;
+    _this.files = [];
+    _this.charm = (0, _charm3.default)(process);
+    if (_this.options['help'] === true) {
+      (0, _help2.default)(_this.charm);
       process.exit(0);
     }
-    this.progress = new _libProgressJs2['default'](this.charm, CliBatchTranscodeVideo.FIRST_TAB);
-    _libChildPromiseJs2['default'].debug = this.options['debug'];
-    return this;
+    _this.progress = new _progress2.default(_this.charm, CliBatchTranscodeVideo.FIRST_TAB);
+    _childPromise2.default.debug = _this.options['debug'];
+    return _possibleConstructorReturn(_this, _this);
   }
 
   _createClass(CliBatchTranscodeVideo, [{
     key: 'cli',
     value: function cli() {
-      var _this = this;
+      var _this2 = this;
 
       process.on('uncaughtException', function (err) {
-        _this.error = err;
-        _this.onError(err);
+        _this2.error = err;
+        _this2.onError(err);
       });
       process.on('exit', function () {
-        if (!_this.isFinished) {
-          _this.status = _indexJs2['default'].ERRORED;
+        if (!_this2.isFinished) {
+          _this2.status = _index2.default.ERRORED;
         }
-        if (_this.files && _this.files.length) {
+        if (_this2.files && _this2.files.length) {
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
 
           try {
-            for (var _iterator = _this.files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for (var _iterator = _this2.files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var file = _step.value;
 
               try {
@@ -102,8 +103,8 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
             _iteratorError = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion && _iterator['return']) {
-                _iterator['return']();
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
               }
             } finally {
               if (_didIteratorError) {
@@ -112,7 +113,7 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
             }
           }
         }
-        _this.finish();
+        _this2.finish();
       });
 
       if (this.options['quiet'] !== true) {
@@ -122,16 +123,16 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
       if (this.options['debug'] !== true && this.options['quiet'] !== true) {
         this.progress.write(this.state());
         this.timer = setInterval(function () {
-          var state = _this.state();
-          _this.progress.clear();
-          _this.progress.write(state);
+          var state = _this2.state();
+          _this2.progress.clear();
+          _this2.progress.write(state);
         }, CliBatchTranscodeVideo.INTERVAL_MS);
       }
 
       return this.transcodeAll().then(function (res) {
-        return _this.onSuccess(res);
-      })['catch'](function (err) {
-        return _this.onError(err);
+        return _this2.onSuccess(res);
+      }).catch(function (err) {
+        return _this2.onError(err);
       });
     }
   }, {
@@ -223,8 +224,7 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   }]);
 
   return CliBatchTranscodeVideo;
-})(_indexJs2['default']);
+})(_index2.default);
 
-exports['default'] = CliBatchTranscodeVideo;
+exports.default = CliBatchTranscodeVideo;
 ;
-module.exports = exports['default'];

@@ -1,14 +1,14 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _util = require('./util.js');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-var _utilJs = require('./util.js');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Progress = (function () {
   function Progress(charm, firstTab) {
@@ -69,8 +69,8 @@ var Progress = (function () {
         _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion && _iterator['return']) {
-            _iterator['return']();
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
         } finally {
           if (_didIteratorError) {
@@ -83,7 +83,7 @@ var Progress = (function () {
       this.colorBar('Summary', counts, state.files.length + ' file' + (state.files.length !== 1 ? 's' : ''));
       this.fileStatusLine(counts);
       this.truncatedLine('Processed', state.processed + ' MB of ' + state.total + ' total MB', state.speed + ' MB/s');
-      this.truncatedLine('Time', 'Total ' + (0, _utilJs.millisecondsToStr)(state.elapsed) + ' (Avg: ' + (0, _utilJs.millisecondsToStr)(state.average) + ')');
+      this.truncatedLine('Time', 'Total ' + (0, _util.millisecondsToStr)(state.elapsed) + ' (Avg: ' + (0, _util.millisecondsToStr)(state.average) + ')');
       this.charm.write('\n');
       var finalMsg = state.success ? 'Finished without error.' : 'Finished with errors.';
       this.bulletPoint(finalMsg, state.success ? 'green' : 'red', true, '=>');
@@ -96,10 +96,10 @@ var Progress = (function () {
       var total = state.total;
       var counts = Progress.getCounts(total.files, false);
       this.bar('Current', cur.percent);
-      this.truncatedLine('File', cur.file, (0, _utilJs.millisecondsToStr)(cur.remaining));
+      this.truncatedLine('File', cur.file, (0, _util.millisecondsToStr)(cur.remaining));
       this.charm.write('\n');
       this.bar('Total', total.percent);
-      this.truncatedLine('Processed', total.processed, (0, _utilJs.millisecondsToStr)(total.remaining));
+      this.truncatedLine('Processed', total.processed, (0, _util.millisecondsToStr)(total.remaining));
       this.fileStatusLine(counts);
       this.charm.display('reset').write('\n');
     }
@@ -125,8 +125,8 @@ var Progress = (function () {
         _iteratorError2 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-            _iterator2['return']();
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
           }
         } finally {
           if (_didIteratorError2) {
@@ -162,7 +162,7 @@ var Progress = (function () {
     value: function bar(label, percent) {
       var size = arguments.length <= 2 || arguments[2] === undefined ? 0.5 : arguments[2];
 
-      var printPercent = (0, _utilJs.fractionToPercent)(percent);
+      var printPercent = (0, _util.fractionToPercent)(percent);
       var colored = Math.round(Number.parseFloat(printPercent) * size);
       var uncolored = 100.0 * size - colored;
       this.charm.display('bright').foreground('cyan').write(Progress.labelPad(label + ': ', this.firstTab)).display('reset').background('cyan').write(' '.repeat(colored)).display('reset').background('black').write(' '.repeat(uncolored)).display('reset').display('bright').write('  ' + printPercent + '%\n');
@@ -191,7 +191,7 @@ var Progress = (function () {
             var type = _step3.value;
 
             var percent = counts[type] / totalCount;
-            var printPercent = (0, _utilJs.fractionToPercent)(percent);
+            var printPercent = (0, _util.fractionToPercent)(percent);
             var colored = Math.round(Number.parseFloat(printPercent) * size);
             if (type === types.slice(-1)[0]) {
               colored = total;
@@ -204,8 +204,8 @@ var Progress = (function () {
           _iteratorError3 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-              _iterator3['return']();
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+              _iterator3.return();
             }
           } finally {
             if (_didIteratorError3) {
@@ -290,6 +290,5 @@ var Progress = (function () {
   return Progress;
 })();
 
-exports['default'] = Progress;
+exports.default = Progress;
 ;
-module.exports = exports['default'];

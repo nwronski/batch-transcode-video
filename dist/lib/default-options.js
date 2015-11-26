@@ -1,23 +1,23 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var curDir = process.cwd();
-exports['default'] = {
+exports.default = {
   // Input folder
   input: curDir,
   // Output folder
   output: null,
   // Search pattern for glob in input directory
-  mask: '**' + _path2['default'].sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
+  mask: '**' + _path2.default.sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
   // Verbose logging
   debug: false,
   // Do not preserve relative directory structure in output directory
@@ -30,4 +30,3 @@ exports['default'] = {
   force: false,
   help: false
 };
-module.exports = exports['default'];

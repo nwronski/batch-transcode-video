@@ -2,6 +2,7 @@ module.exports = function (grunt) {
   require("load-grunt-tasks")(grunt);
 
   grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
     concat: {
       options: {
         stripBanners: true,
@@ -14,7 +15,8 @@ module.exports = function (grunt) {
     },
     babel: {
       options: {
-        sourceMap: false
+        sourceMap: false,
+        presets: ['es2015']
       },
       dist: {
         files: [{
@@ -39,7 +41,7 @@ module.exports = function (grunt) {
       },
       standalone: {
         files: ['batch-transcode-video.js'],
-        tasks: ['babel:bin', 'concat:bin'],
+        tasks: ['babel:bin', 'concat:bin', 'replace:bin'],
         options: {
           spawn: false
         }
@@ -51,8 +53,26 @@ module.exports = function (grunt) {
           reload: true
         }
       }
+    },
+    replace: {
+      options: {
+        patterns: [
+          {
+            match: 'VERSION',
+            replacement: '<%= pkg.version %>'
+          }
+        ]
+      },
+      bin: {
+        files: [{
+          expand: true,
+          cwd: 'bin/',
+          src: 'batch-transcode-video',
+          dest: 'bin/'
+        }]
+      }
     }
   });
 
-  grunt.registerTask('default', ['babel', 'concat']);
+  grunt.registerTask('default', ['babel', 'concat', 'replace']);
 };

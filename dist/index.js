@@ -1,14 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var _bluebird = require('bluebird');
 
@@ -24,21 +20,25 @@ var _glob3 = _interopRequireDefault(_glob2);
 
 var _fs = require('fs');
 
-var _libTranscodeErrorJs = require('./lib/transcode-error.js');
+var _transcodeError = require('./lib/transcode-error.js');
 
-var _libTranscodeErrorJs2 = _interopRequireDefault(_libTranscodeErrorJs);
+var _transcodeError2 = _interopRequireDefault(_transcodeError);
 
-var _libVideoFileJs = require('./lib/video-file.js');
+var _videoFile = require('./lib/video-file.js');
 
-var _libVideoFileJs2 = _interopRequireDefault(_libVideoFileJs);
+var _videoFile2 = _interopRequireDefault(_videoFile);
 
-var _libDefaultOptionsJs = require('./lib/default-options.js');
+var _defaultOptions = require('./lib/default-options.js');
 
-var _libDefaultOptionsJs2 = _interopRequireDefault(_libDefaultOptionsJs);
+var _defaultOptions2 = _interopRequireDefault(_defaultOptions);
 
-var glob = _bluebird2['default'].promisify(_glob3['default']);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var stat = _bluebird2['default'].promisify(_fs.stat);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var glob = _bluebird2.default.promisify(_glob3.default);
+
+var stat = _bluebird2.default.promisify(_fs.stat);
 
 var destExtensionRegex = /^\-{2}(mp4|m4v)$/i;
 var dryRunRegex = /^\-\-dry\-run$/i;
@@ -76,6 +76,7 @@ var BatchTranscodeVideo = (function () {
     /* This is the value to use before there is any data to calculate speed
      * with estimateSpeed(). A value between 100 and 3000 seems reasonable.
      */
+
   }, {
     key: 'EST_MS_PER_MB',
     get: function get() {
@@ -87,7 +88,7 @@ var BatchTranscodeVideo = (function () {
     _classCallCheck(this, BatchTranscodeVideo);
 
     options['curDir'] = process.cwd();
-    options['input'] = _path2['default'].relative(options['curDir'], options['input']);
+    options['input'] = _path2.default.relative(options['curDir'], options['input']);
     options['dryRun'] = transcodeOptions.length ? transcodeOptions.reduce(function (prev, cur) {
       return prev || dryRunRegex.test(cur.trim());
     }, false) : false;
@@ -98,8 +99,8 @@ var BatchTranscodeVideo = (function () {
       }
       return prev;
     }, 'mkv');
-    this.filePattern = _path2['default'].normalize(options['input'] + _path2['default'].sep + options['mask']);
-    this.options = Object.assign({}, _libDefaultOptionsJs2['default'], options);
+    this.filePattern = _path2.default.normalize(options['input'] + _path2.default.sep + options['mask']);
+    this.options = Object.assign({}, _defaultOptions2.default, options);
     this.transcodeOptions = transcodeOptions.slice(0);
     this.status = BatchTranscodeVideo.INACTIVE;
     this.files = [];
@@ -116,11 +117,11 @@ var BatchTranscodeVideo = (function () {
 
       return glob(this.filePattern, {}).then(function (files) {
         if (files.length === 0) {
-          throw new _libTranscodeErrorJs2['default']('No files found for search pattern provided.', _this.filePattern);
+          throw new _transcodeError2.default('No files found for search pattern provided.', _this.filePattern);
         }
         return files;
       }, function (err) {
-        throw new _libTranscodeErrorJs2['default']('File system error encountered while scanning for media.', _this.filePattern, err.message);
+        throw new _transcodeError2.default('File system error encountered while scanning for media.', _this.filePattern, err.message);
       }).map(function (file) {
         return _this.resolvePath(file);
       }, {
@@ -137,7 +138,7 @@ var BatchTranscodeVideo = (function () {
 
       return this._ready.then(function () {
         if (!_this2.isReady) {
-          throw new _libTranscodeErrorJs2['default']('Batch has already been processed.', _this2.filePattern);
+          throw new _transcodeError2.default('Batch has already been processed.', _this2.filePattern);
         }
         _this2.startTime = Date.now();
         _this2.lastTime = _this2.startTime;
@@ -158,7 +159,7 @@ var BatchTranscodeVideo = (function () {
         if (errored > 0) {
           _this2.status = BatchTranscodeVideo.ERRORED;
         }
-      })['catch'](function (err) {
+      }).catch(function (err) {
         _this2.lastTime = Date.now();
         _this2.stopTime = _this2.lastTime;
         _this2.status = BatchTranscodeVideo.ERRORED;
@@ -172,7 +173,7 @@ var BatchTranscodeVideo = (function () {
       var _this3 = this;
 
       return stat(filePath).then(function (stats) {
-        return new _libVideoFileJs2['default'](filePath, stats, _this3.options, _this3.transcodeOptions, function () {
+        return new _videoFile2.default(filePath, stats, _this3.options, _this3.transcodeOptions, function () {
           return _this3.estimateSpeed();
         });
       });
@@ -268,6 +269,5 @@ var BatchTranscodeVideo = (function () {
   return BatchTranscodeVideo;
 })();
 
-exports['default'] = BatchTranscodeVideo;
+exports.default = BatchTranscodeVideo;
 ;
-module.exports = exports['default'];

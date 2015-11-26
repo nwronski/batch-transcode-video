@@ -1,17 +1,17 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports['default'] = help;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+exports.default = help;
 
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _utilJs = require('./util.js');
+var _util = require('./util.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var args = [{
   arg: 'input [path]',
@@ -26,7 +26,7 @@ var args = [{
 }, {
   arg: 'mask [str]',
   desc: 'Search pattern to use for input directory. Note that the default pattern will search in nested directories. For more information about what values can be used, see the node-glob documentation.',
-  def: '**' + _path2['default'].sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
+  def: '**' + _path2.default.sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
   alias: 'm'
 }, {
   arg: 'diff',
@@ -63,8 +63,8 @@ function help(charm) {
     _iteratorError = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion && _iterator['return']) {
-        _iterator['return']();
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
       }
     } finally {
       if (_didIteratorError) {
@@ -72,9 +72,7 @@ function help(charm) {
       }
     }
   }
-}
-
-;
+};
 
 function printArg(_ref, charm) {
   var arg = _ref.arg;
@@ -94,7 +92,6 @@ function printArg(_ref, charm) {
   }
   charm.write('\n');
   if (desc) {
-    charm.display('reset').foreground('white').write((0, _utilJs.splitter)(desc) + '\n');
+    charm.display('reset').foreground('white').write((0, _util.splitter)(desc) + '\n');
   }
 }
-module.exports = exports['default'];
