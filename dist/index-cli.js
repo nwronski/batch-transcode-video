@@ -86,7 +86,8 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
         _this2.onError(err);
       });
       process.on('exit', function () {
-        if (!_this2.isFinished) {
+        // Handle SIGINT
+        if (!_this2.isDone) {
           _this2.status = _index2.default.ERRORED;
         }
         if (_this2.files && _this2.files.length) {
