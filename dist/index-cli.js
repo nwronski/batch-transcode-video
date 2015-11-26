@@ -10,6 +10,8 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
+var _fs = require('fs');
+
 var _index = require('./index.js');
 
 var _index2 = _interopRequireDefault(_index);
@@ -21,6 +23,10 @@ var _progress2 = _interopRequireDefault(_progress);
 var _help = require('./lib/help.js');
 
 var _help2 = _interopRequireDefault(_help);
+
+var _videoFile = require('./lib/video-file.js');
+
+var _videoFile2 = _interopRequireDefault(_videoFile);
 
 var _charm2 = require('charm');
 
@@ -95,6 +101,14 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
               try {
                 if (file._encode !== null) {
                   file._encode.kill();
+                }
+                // Handle SIGINT
+                if (file.isRunning) {
+                  file.status = _videoFile2.default.ERRORED;
+                }
+                if (file.isErrored) {
+                  // Try and delete the destination file if it exists
+                  (0, _fs.unlinkSync)(file.destFilePath);
                 }
               } catch (e) {}
             }

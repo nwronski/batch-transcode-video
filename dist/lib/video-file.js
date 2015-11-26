@@ -253,7 +253,7 @@ var VideoFile = (function () {
         if (_this3.options['dryRun']) {
           return false;
         } else {
-          // Check the output from the trasncode to confirm it finished
+          // Check the output from the transcode to confirm it finished
           var transcodeStatus = output.match(handbrakeFinish);
           if (transcodeStatus === null) {
             _this3.totalEncodeTime = null;
