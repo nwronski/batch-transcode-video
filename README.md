@@ -16,6 +16,12 @@ Requires [Node.js](https://nodejs.org) and [Ruby](https://www.ruby-lang.org).
 
 **Important:** You must have all of the dependencies listed in this section of [the transcode_video README](https://github.com/donmelton/video_transcoding#requirements).
 
+Before installing `batch-transcode-video`, install the `video_transcoding` gem using the following command.
+
+```
+gem install video_transcoding
+```
+
 ## Installation
 
 This utility can be installed so that it is globally accessible from the terminal as `batch-transcode-video` using the following command.

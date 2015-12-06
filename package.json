@@ -23,9 +23,6 @@
     "dist/"
   ],
   "main": "dist/index.js",
-  "scripts": {
-    "postinstall": "gem install video_transcoding"
-  },
   "author": "Nick Wronski (https://github.com/nwronski)",
   "repository": "git@github.com:nwronski/batch-transcode-video.git",
   "bugs": {
