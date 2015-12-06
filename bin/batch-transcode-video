@@ -27,10 +27,11 @@ var defs = {
     output: 'o',
     mask: 'm',
     help: 'h',
-    version: 'v'
+    version: 'v',
+    force: 'f'
   },
-  boolean: ['debug', 'quiet', 'flatten', 'diff', 'help', 'force', 'version'],
-  string: ['input', 'output', 'mask'],
+  boolean: ['debug', 'quiet', 'flatten', 'diff', 'help', 'version'],
+  string: ['input', 'output', 'mask', 'force'],
   default: _defaultOptions2.default,
   unknown: function unknown(arg) {
     console.log('ERROR:\tUnrecognized argument ' + arg + ' provided.');

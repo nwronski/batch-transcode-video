@@ -89,15 +89,18 @@ batch.cli();
 ## Options
 
 - `--help` _Flag: does not accept a value_ (Alias: `-h`)
-  You can view the manual for this tool by using this flag in the terminal.
+  - You can view the manual for this tool by using this flag in the terminal.
 - `--input [path]` (Default: `process.cwd()`) (Alias: `-i`)
-  The input **directory** containing the source videos to transcode.
+  - The input **directory** containing the source videos to transcode.
 - `--output [path]` (Default: _same directory as source files_) (Alias: `-o`)
-  The output **directory** to hold the transcoded videos. If you do not specify an output directory then each transcoded file will be placed in the same directory as its source file. Note: if a source file is already in the same file format as the transcoded video (e.g.: both source and output are both `.mkv`) then you must specify an output directory, as the program will not overwrite existing files.
+  - The output **directory** to hold the transcoded videos. If you do not specify an output directory then each transcoded file will be placed in the same directory as its source file. Note: if a source file is already in the same file format as the transcoded video (e.g.: both source and output are both `.mkv`) then you must specify an output directory, as the program will not overwrite existing files.
 - `--mask [pattern]` (Default: `**/*.{mp4,avi,mkv,m4v,ts,mov}`) (Alias: `-m`)
-  Search pattern to use for input directory. Note that the default pattern will search in nested directories. For more information about what values can be used, see the [glob](https://github.com/isaacs/node-glob) documentation.
+  - Search pattern to use for input directory. Note that the default pattern will search in nested directories. For more information about what values can be used, see the [glob](https://github.com/isaacs/node-glob) documentation.
+- `--force` _Mixed values_ (Alias: `-f`)
+  - If you provide **an actual crop value** (e.g.: `"0:0:0:0"`) as the argument for this option, then that crop value will be used **for all videos**.
+  - If you provide anything other than an actual crop value (e.g. `1`) as the argument for this option, then when crop detection returns conflicting crop values it will just use the least extreme crop value and continue transcoding.
 - `--diff` _Flag: does not accept a value_ (Default: `false`)
-  Enable this option if you only want to transcode source files that do not exist already in the `output` folder.
+  - Enable this option if you only want to transcode source files that do not exist already in the `output` folder.
   - If a destination file already exists in the `output` directory:
     -  And `diff` is **enabled**, a notice will be generated letting you know that the file was skipped (unless `quiet` is enabled).
     - And `diff` is **not enabled**, an error will be generated letting you know that the file already exists.
@@ -106,11 +109,9 @@ batch.cli();
 - `--debug` _Flag: does not accept a value_ (Default: `false`)
   Enable verbose logging mode. Disables progress indicator and then streams child process to master `stdout` for `detect-crop` and `transcode-video`.
 - `--flatten` _Flag: does not accept a value_ (Default: `false`)
-  Do not preserve relative directory structure in output directory. If this is enabled, the base output folder will contain all transcoded videos. Note: this option has no effect unless you specify an `output` directory.
+  - Do not preserve relative directory structure in output directory. If this is enabled, the base output folder will contain all transcoded videos. Note: this option has no effect unless you specify an `output` directory.
 - `--quiet` _Flag: does not accept a value_ (Default: `false`)
-  Prevents **any** logging to stdout and will only exit `0` on success or `1` on error
-- `--force` _Flag: does not accept a value_ (Default: `false`)
-  If crop detection returns conflicting crop values then just use the least extreme crop value and continue transcoding.
+  - Prevents **any** logging to stdout and will only exit `0` on success or `1` on error
 
 ### Providing options to transcode-video
 

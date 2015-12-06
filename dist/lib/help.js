@@ -29,6 +29,11 @@ var args = [{
   def: '**' + _path2.default.sep + '*.{mp4,avi,mkv,m4v,ts,mov}',
   alias: 'm'
 }, {
+  arg: 'force [crop]',
+  desc: 'If you provide an actual crop value (e.g.: "0:0:0:0") as the argument for this option, then that crop value will be used for all videos. If you provide anything other than an actual crop value (e.g. 1) as the argument for this option, then when crop detection returns conflicting crop values it will just use the least extreme crop value and continue transcoding.',
+  def: 'false',
+  alias: 'f'
+}, {
   arg: 'diff',
   desc: 'Enable this option if you only want to transcode source files that do not exist already in the output folder.'
 }, {
@@ -40,9 +45,6 @@ var args = [{
 }, {
   arg: 'quiet',
   desc: 'Do not log output messages to command line, only exit 0 if successful or 1 if there are errors. This will disable the progress bars that display the current progress and remaining time estimates and also the summary output (writes, errors, stats) at end of process.'
-}, {
-  arg: 'force',
-  desc: 'If crop detection returns conflicting crop values then just use the least extreme crop value and continue transcoding.'
 }];
 
 function help(charm) {
@@ -88,7 +90,7 @@ function printArg(_ref, charm) {
     charm.display('reset').foreground('blue').write('\t[' + def + ']');
   }
   if (alias) {
-    charm.display('reset').write(' (Alias: ').display('bright').foreground('yellow').write('-' + alias).write(')');
+    charm.display('reset').write(' (Alias: ').display('bright').foreground('yellow').write('-' + alias).display('reset').write(')');
   }
   charm.write('\n');
   if (desc) {

@@ -178,13 +178,21 @@ var VideoFile = (function () {
     value: function _detectCrop() {
       var _this2 = this;
 
-      this._crop = new _childPromise2.default({
-        cmd: 'detect-crop',
-        args: [this.filePathRel],
-        fileName: this.fileName,
-        cwd: this.options['curDir']
-      });
-      return this._crop.start().then(function (output) {
+      var prom = undefined;
+      if (/([0-9]+\:){3}[0-9]+/.test(this.options['force'])) {
+        // Force the crop value provided using the --force option
+        var useCommand = 'transcode-video --crop ' + this.options['force'] + ' ' + this.filePathRel;
+        this._crop = prom = _bluebird2.default.resolve(useCommand);
+      } else {
+        this._crop = new _childPromise2.default({
+          cmd: 'detect-crop',
+          args: [this.filePathRel],
+          fileName: this.fileName,
+          cwd: this.options['curDir']
+        });
+        prom = this._crop.start();
+      }
+      return prom.then(function (output) {
         // Make sure conflicting results are not returned from detect-crop
         var useCommands = output.replace(/^\s+|\s+$/g, '').split(/\n+/).map(function (line) {
           return line.trim();
@@ -195,7 +203,7 @@ var VideoFile = (function () {
         if (useCommands.length === 0) {
           throw new _transcodeError2.default('Crop detection failed. Skipping transcode for file.', _this2.fileName, output);
         } else if (useCommands.length > 1) {
-          if (_this2.options['force']) {
+          if (_this2.options['force'] !== false) {
             // Pick the least extreme crop
             useCommands.sort(cropCompareFunc);
           } else {

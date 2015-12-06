@@ -13,13 +13,14 @@ let defs = {
     output: 'o',
     mask: 'm',
     help: 'h',
-    version: 'v'
+    version: 'v',
+    force: 'f'
   },
   boolean: [
-    'debug', 'quiet', 'flatten', 'diff', 'help', 'force', 'version'
+    'debug', 'quiet', 'flatten', 'diff', 'help', 'version'
   ],
   string: [
-    'input', 'output', 'mask'
+    'input', 'output', 'mask', 'force'
   ],
   default: defaultOptions,
   unknown: function (arg) {
