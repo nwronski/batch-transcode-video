@@ -32,6 +32,7 @@
   "dependencies": {
     "bluebird": "^3.0.5",
     "charm": "^1.0.0",
+    "cross-spawn-async": "^2.0.1",
     "glob": "^6.0.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",

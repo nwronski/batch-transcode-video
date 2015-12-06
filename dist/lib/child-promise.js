@@ -12,7 +12,9 @@ var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
-var _child_process = require('child_process');
+var _crossSpawnAsync = require('cross-spawn-async');
+
+var _crossSpawnAsync2 = _interopRequireDefault(_crossSpawnAsync);
 
 var _transcodeError = require('./transcode-error.js');
 
@@ -38,14 +40,11 @@ var ChildPromise = (function () {
   function ChildPromise(options, childOptions) {
     _classCallCheck(this, ChildPromise);
 
-    // cmd, args, file, dir, mute, callback
-    var isWindows = (0, _util.isWindows)();
     this.options = Object.assign({
       fileName: '',
       cmd: '',
       args: [],
       cwd: '.',
-      isWindows: isWindows,
       onData: function onData() {},
       onError: function onError() {},
       // Note: Had to mute stderr to prevent false positive errors
@@ -72,13 +71,8 @@ var ChildPromise = (function () {
         var _options = _this.options;
         var cmd = _options.cmd;
         var args = _options.args;
-        var isWindows = _options.isWindows;
 
-        _this._child = isWindows ?
-        // Use exec() and special escape syntax for Windows
-        (0, _child_process.exec)((0, _util.windowsCommand)(cmd, args), _this.childOptions) :
-        // Use spawn() and normal syntax for non-Windows
-        (0, _child_process.spawn)(cmd, args, _this.childOptions);
+        _this._child = (0, _crossSpawnAsync2.default)(cmd, args, _this.childOptions);
 
         _this._child.stdout.on('data', function (data) {
           return _this.dataHandler(data);
