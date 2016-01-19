@@ -1,6 +1,6 @@
 # batch-transcode-video
 
-[![NPM Version Image](https://img.shields.io/npm/v/sqlite-parser.svg)](https://www.npmjs.com/package/batch-transcode-video)
+[![NPM Version Image](https://img.shields.io/npm/v/batch-transcode-video.svg)](https://www.npmjs.com/package/batch-transcode-video)
 [![dependencies Status Image](https://img.shields.io/david/nwronski/batch-transcode-video.svg)](https://github.com/nwronski/batch-transcode-video/)
 [![devDependencies Status Image](https://img.shields.io/david/dev/nwronski/batch-transcode-video.svg)](https://github.com/nwronski/batch-transcode-video/)
 [![License Type Image](https://img.shields.io/github/license/nwronski/batch-transcode-video.svg)](https://github.com/nwronski/batch-transcode-video/blob/master/LICENSE)
