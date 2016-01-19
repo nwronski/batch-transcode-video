@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
+## [v1.1.0] - 2016-01-19
+### Added
+- `--force` now accepts the following argument values:
+  - a crop value to use for all videos, such as `"0:0:0:0"`
+  - any other value for when to use the least extreme crop, e.g.: `1`
+- Added `--version` and `-v` flags to CLI.
+
+### Changed
+- Drop child_process spawn for cross-spawn-async. This change should get things working consistently on Windows. Before, batch operations would fail unexpectedly and have to be restarted several times to fully complete.
+- Do not install `video_transcoding` gem by default. Do not force install of gem every time module is installed.
+- Delete output files that cannot be confirmed. If an output file does not complete and generate a valid log file that can be verified then delete the partial or errored file.
 
 ## [v1.0.5] - 2015-11-25
 ### Fixed
@@ -123,7 +134,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.5...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.1.0...HEAD
+[v1.1.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.5...v1.1.0
 [v1.0.5]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.4...v1.0.5
 [v1.0.4]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.3...v1.0.4
 [v1.0.3]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.2...v1.0.3

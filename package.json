@@ -1,6 +1,6 @@
 {
   "name": "batch-transcode-video",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Batch transcode videos using the video_transcoding gem.",
   "contributors": [
     "Nick Wronski (https://github.com/nwronski)"
@@ -30,21 +30,21 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.0.5",
+    "bluebird": "^3.1.1",
     "charm": "^1.0.0",
-    "cross-spawn-async": "^2.0.1",
-    "glob": "^6.0.1",
+    "cross-spawn-async": "^2.1.6",
+    "glob": "^6.0.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "shell-quote": "^1.4.3"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-es2015": "^6.3.13",
     "grunt": "^0.4.5",
     "grunt-babel": "^6.0.0",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-replace": "^0.11.0",
-    "load-grunt-tasks": "^3.3.0"
+    "load-grunt-tasks": "^3.4.0"
   }
 }
