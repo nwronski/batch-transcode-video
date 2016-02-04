@@ -60,6 +60,8 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
   }]);
 
   function CliBatchTranscodeVideo(options, transcodeOptions) {
+    var _ret;
+
     _classCallCheck(this, CliBatchTranscodeVideo);
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CliBatchTranscodeVideo).call(this, options, transcodeOptions));
@@ -73,7 +75,7 @@ var CliBatchTranscodeVideo = (function (_BatchTranscodeVideo) {
     }
     _this.progress = new _progress2.default(_this.charm, CliBatchTranscodeVideo.FIRST_TAB);
     _childPromise2.default.debug = _this.options['debug'];
-    return _possibleConstructorReturn(_this, _this);
+    return _ret = _this, _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(CliBatchTranscodeVideo, [{

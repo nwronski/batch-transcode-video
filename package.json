@@ -30,9 +30,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.1.1",
+    "bluebird": "^3.2.1",
     "charm": "^1.0.0",
-    "cross-spawn-async": "^2.1.6",
+    "cross-spawn-async": "^2.1.8",
     "glob": "^6.0.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
