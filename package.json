@@ -22,6 +22,9 @@
     "README.md",
     "dist/"
   ],
+  "scripts": {
+    "build": "grunt"
+  },
   "main": "dist/index.js",
   "author": "Nick Wronski (https://github.com/nwronski)",
   "repository": "git@github.com:nwronski/batch-transcode-video.git",

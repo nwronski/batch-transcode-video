@@ -1,3 +1,6 @@
 node_modules
 .ref
 .tmp
+.DS_Store
+dist
+bin
