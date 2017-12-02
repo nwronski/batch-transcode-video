@@ -8,7 +8,7 @@
 
 ![batch-transcode-video screenshot 1](https://cloud.githubusercontent.com/assets/5528249/11022434/025d9d4a-862d-11e5-8b0c-4134e7edd0d7.png)
 
-A command-line utility for recursively running batch cropping and transcoding operations on a directory of videos. This utility is a wrapper for a a utility called [transcode_video](https://github.com/donmelton/video_transcoding) which itself is a wrapper for trancoding utilities such as [HandbrakeCLI](https://handbrake.fr), [MKVToolNix](https://www.bunkus.org/videotools/mkvtoolnix/), and [mplayer](http://www.mplayerhq.hu/).
+A command-line utility for recursively running batch cropping and transcoding operations on a directory of videos. This utility is a wrapper for a a utility called [transcode_video](https://github.com/donmelton/video_transcoding) which itself is a wrapper for trancoding utilities such as [HandbrakeCLI](https://handbrake.fr), [MKVToolNix](https://www.bunkus.org/videotools/mkvtoolnix/), and [ffmpeg](https://ffmpeg.org/).
 
 ## Prerequisites
 
