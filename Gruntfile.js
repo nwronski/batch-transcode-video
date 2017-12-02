@@ -16,7 +16,7 @@ module.exports = function (grunt) {
     babel: {
       options: {
         sourceMap: false,
-        presets: ['es2015']
+        presets: ['env']
       },
       dist: {
         files: [{
