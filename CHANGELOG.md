@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
+## [v1.2.0] - 2017-12-02
+### Added
+- Added message about installing the video_transcoding gem if a `TranscodeError` contains `ENOENT` in the error message.
+
+### Fixed
+- Do not commit generated files to source control (`bin/`, `lib/`). If installing this from the GitHub repo, run `npm run build` to build.
+- Upgrade `package.json` dependencies.
+- Include original error message in error output for a `TranscodeError`.
+
 ## [v1.1.0] - 2016-01-19
 ### Added
 - `--force` now accepts the following argument values:
@@ -134,7 +143,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.2.0...HEAD
+[v1.2.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.5...v1.1.0
 [v1.0.5]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.4...v1.0.5
 [v1.0.4]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.3...v1.0.4
