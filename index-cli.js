@@ -44,7 +44,7 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
             if (file.isRunning) {
               file.status = VideoFile.ERRORED;
             }
-            if (file.isErrored) {
+            if (file.isErrored && this.options['keep'] !== true) {
               // Try and delete the destination file if it exists
               unlinkSync(file.destFilePath);
             }
