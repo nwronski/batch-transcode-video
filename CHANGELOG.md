@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
+## [v1.3.0] - 2019-02-20
+### Added
+- Added `--keep` flag to prevent files from being deleted from the output directory. The `--keep` (alias: `-k`) causes `batch-transcode-video` to **never delete any output files**, no matter what happens, **even if the encoding task fails** for the corresponding input file. If you use this option, input files that fail to encode correctly, or finish encoding, will not be deleted from the output folder. Subsequent runs, with or without using the `--diff` option, will not reprocess the failed input files, unless the corresponding output files are manually deleted.
+
 ## [v1.2.0] - 2017-12-02
 ### Added
 - Added message about installing the video_transcoding gem if a `TranscodeError` contains `ENOENT` in the error message.
@@ -143,7 +147,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.3.0...HEAD
+[v1.3.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.2.0...v1.3.0
 [v1.2.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.5...v1.1.0
 [v1.0.5]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.4...v1.0.5
