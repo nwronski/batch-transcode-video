@@ -14,10 +14,11 @@ let defs = {
     mask: 'm',
     help: 'h',
     version: 'v',
-    force: 'f'
+    force: 'f',
+    keep: 'k'
   },
   boolean: [
-    'debug', 'quiet', 'flatten', 'diff', 'help', 'version'
+    'debug', 'quiet', 'flatten', 'diff', 'help', 'version', 'keep'
   ],
   string: [
     'input', 'output', 'mask', 'force'

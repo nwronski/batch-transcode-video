@@ -11,7 +11,7 @@
     "transcode-video"
   ],
   "engine": "node >= 4.0.0",
-  "preferGlobal": "true",
+  "preferGlobal": true,
   "bin": {
     "batch-transcode-video": "bin/batch-transcode-video"
   },
@@ -43,10 +43,10 @@
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.3",
     "grunt-babel": "^6.0.0",
     "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-watch": "^1.0.0",
+    "grunt-contrib-watch": "^1.1.0",
     "grunt-replace": "^1.0.1",
     "load-grunt-tasks": "^3.5.2"
   }

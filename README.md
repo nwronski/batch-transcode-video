@@ -38,6 +38,14 @@ This utility can recover from most errors, and as such, it will continue to **se
 
 A summary is displayed when the entire batch transcoding operation is finished. The summary includes the overall number of errors encountered and files successfully created.
 
+### Before You Begin
+
+**WARNING:** If the program cannot successfully transcode an input file, and then verify the output video file, it will be marked as _errored_ and the transcoded file (if one exists) will be deleted from the output directory. This is done to prevent partially-transcoded files from remaining in the output directory that then need to be manually deleted before retrying the transcoding operation.
+
+If you run the program using an output directory containing previously-transcoded video, especially for source files that still exist in your input directory, you **must** use the `--diff` option to ensure sucessful transcodes from previous batches are not deleted from the output directory. In `--diff` mode, input files are skipped when their corresponding output files already exist in the output directory.
+
+Alternatively, you can use the `--keep` option to ensure files are never deleted from the output directory, even if they have errors or failed to finish transcoding. However, subsequent runs, with or without using the `--diff` option, will not reprocess failed input files, unless the corresponding output files are manually deleted.
+
 ### Instructions
 
 Recursively search for videos to transcode using [video_transcoding](https://github.com/donmelton/video_transcoding). If an `input` **directory** is not specified then the current directory will be used as the input directory.
@@ -118,6 +126,8 @@ batch.cli();
   - Do not preserve relative directory structure in output directory. If this is enabled, the base output folder will contain all transcoded videos. Note: this option has no effect unless you specify an `output` directory.
 - `--quiet` _Flag: does not accept a value_ (Default: `false`)
   - Prevents **any** logging to stdout and will only exit `0` on success or `1` on error
+- `--keep` _Flag: does not accept a value_ (Default: `false`) (Alias: `-k`)
+  - **Never delete any output files**, no matter what happens, **even if the encoding task fails** for the corresponding input file. If you use this option, input files that fail to encode correctly, or finish encoding, will not be deleted from the output folder. Subsequent runs, with or without using the `--diff` option, will not reprocess the failed input files, unless the corresponding output files are manually deleted.
 
 ### Providing options to transcode-video
 
