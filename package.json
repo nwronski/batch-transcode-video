@@ -33,17 +33,17 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.5.1",
+    "bluebird": "^3.7.1",
     "charm": "^1.0.2",
     "cross-spawn-async": "^2.2.5",
-    "glob": "^7.1.2",
+    "glob": "^7.1.5",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "shell-quote": "^1.6.1"
+    "shell-quote": "^1.7.2"
   },
   "devDependencies": {
-    "babel-preset-env": "^1.6.1",
-    "grunt": "^1.0.3",
+    "babel-preset-env": "^1.7.0",
+    "grunt": "^1.0.4",
     "grunt-babel": "^6.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-watch": "^1.1.0",
