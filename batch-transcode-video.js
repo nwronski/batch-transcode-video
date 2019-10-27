@@ -14,14 +14,14 @@ let defs = {
     mask: 'm',
     help: 'h',
     version: 'v',
-    force: 'f',
+    crop: 'c',
     keep: 'k'
   },
   boolean: [
     'debug', 'quiet', 'flatten', 'diff', 'help', 'version', 'keep', 'nocrop'
   ],
   string: [
-    'input', 'output', 'mask', 'force'
+    'input', 'output', 'mask', 'crop'
   ],
   default: defaultOptions,
   unknown: function (arg) {

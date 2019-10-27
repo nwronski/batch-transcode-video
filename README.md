@@ -110,7 +110,7 @@ batch.cli();
   - The output **directory** to hold the transcoded videos. If you do not specify an output directory then each transcoded file will be placed in the same directory as its source file. Note: if a source file is already in the same file format as the transcoded video (e.g.: both source and output are both `.mkv`) then you must specify an output directory, as the program will not overwrite existing files.
 - `--mask [pattern]` (Default: `**/*.{mp4,avi,mkv,m4v,ts,mov}`) (Alias: `-m`)
   - Search pattern to use for input directory. Note that the default pattern will search in nested directories. For more information about what values can be used, see the [glob](https://github.com/isaacs/node-glob) documentation.
-- `--force` _Mixed values_ (Alias: `-f`)
+- `--crop` _Mixed values_ (Alias: `-c`)
   - If you provide **an actual crop value** (e.g.: `"0:0:0:0"`) as the argument for this option, then that crop value will be used **for all videos**.
   - If you provide anything other than an actual crop value (e.g. `1`) as the argument for this option, then when crop detection returns conflicting crop values it will just use the least extreme crop value and continue transcoding.
 - `--diff` _Flag: does not accept a value_ (Default: `false`)
