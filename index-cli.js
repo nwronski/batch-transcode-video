@@ -1,5 +1,4 @@
 import Promise from 'bluebird';
-import {unlinkSync} from 'fs';
 import BatchTranscodeVideo from './index.js';
 import Progress from './lib/progress.js';
 import help from './lib/help.js';
@@ -36,19 +35,7 @@ export default class CliBatchTranscodeVideo extends BatchTranscodeVideo {
       }
       if (this.files && this.files.length) {
         for (let file of this.files) {
-          try {
-            if (file._encode !== null) {
-              file._encode.kill();
-            }
-            // Handle SIGINT
-            if (file.isRunning) {
-              file.status = VideoFile.ERRORED;
-            }
-            if (file.isErrored && this.options['keep'] !== true) {
-              // Try and delete the destination file if it exists
-              unlinkSync(file.destFilePath);
-            }
-          } catch (e) {}
+          file.kill();
         }
       }
       this.finish();
