@@ -18,7 +18,7 @@ let defs = {
     keep: 'k'
   },
   boolean: [
-    'debug', 'quiet', 'flatten', 'diff', 'help', 'version', 'keep'
+    'debug', 'quiet', 'flatten', 'diff', 'help', 'version', 'keep', 'nocrop'
   ],
   string: [
     'input', 'output', 'mask', 'force'

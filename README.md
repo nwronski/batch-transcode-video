@@ -48,10 +48,10 @@ Alternatively, you can use the `--keep` option to ensure files are never deleted
 
 ### Instructions
 
-Recursively search for videos to transcode using [video_transcoding](https://github.com/donmelton/video_transcoding). If an `input` **directory** is not specified then the current directory will be used as the input directory.
+Recursively search for videos to transcode using [video_transcoding](https://github.com/donmelton/video_transcoding). If an `input` **directory** is not specified then the current directory will be used as the input directory. If an `output` **directory** is not specified, the `input` directory will be used for the transcoded videos. By default, if an output file already exists then it will be treated as an error. Use the `--diff` option to skip `input` files that already exist in the `output` folder.
 
 ```
-batch-transcode-video --input "video/"
+batch-transcode-video --input video/ --output transcoded/ --diff
 ```
 
 Transcoded files will be placed in the same directory as the source unless you specify an `output` directory. The relative folder structure will be maintained in the output directory unless you use the `flatten` flag.
@@ -116,7 +116,7 @@ batch.cli();
 - `--diff` _Flag: does not accept a value_ (Default: `false`)
   - Enable this option if you only want to transcode source files that do not exist already in the `output` folder.
   - If a destination file already exists in the `output` directory:
-    -  And `diff` is **enabled**, a notice will be generated letting you know that the file was skipped (unless `quiet` is enabled).
+    - And `diff` is **enabled**, a notice will be generated letting you know that the file was skipped (unless `quiet` is enabled).
     - And `diff` is **not enabled**, an error will be generated letting you know that the file already exists.
   - If you want to transcode a batch of videos in-place (i.e.: without specifying an `output` directory) then you should enabled this option to prevent errors from being generated when the source and destination file names have the same extension.
     - For example: trying to transcode a `.mkv` video into a `.mkv` video without supplying an external `output` directory will generate an error unless you specify the `diff` flag.
@@ -128,11 +128,13 @@ batch.cli();
   - Prevents **any** logging to stdout and will only exit `0` on success or `1` on error
 - `--keep` _Flag: does not accept a value_ (Default: `false`) (Alias: `-k`)
   - **Never delete any output files**, no matter what happens, **even if the encoding task fails** for the corresponding input file. If you use this option, input files that fail to encode correctly, or finish encoding, will not be deleted from the output folder. Subsequent runs, with or without using the `--diff` option, will not reprocess the failed input files, unless the corresponding output files are manually deleted.
+- `--nocrop` _Flag: does not accept a value_ (Default: `false`)
+  - Skip crop detection entirely (i.e., do not run `detect-crop`) and do not pass a `--crop` value to `transcode-video`.
 
 ### Providing options to transcode-video
 
 If you want to provide custom options to `trancode-video` then you can place them at the end of your normal options following a `--` and they will be passed directly to the `transcode-video` program. Find more information about the allowed options at [the transcode_video README](https://github.com/donmelton/video_transcoding#using-transcode-video).
 
 ```
-batch-transcode-video --input "video/" --output "transcoded/" --debug -- --dry-run
+batch-transcode-video --input video/ --output transcoded/ --diff -- --dry-run
 ```

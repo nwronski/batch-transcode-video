@@ -1,0 +1,34 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "preLaunchTask": "npm: build",
+      "stopOnEntry": false,
+      "outputCapture": "console",
+      "console": "integratedTerminal",
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*",
+        "${workspaceFolder}/bin/**/*"
+      ],
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "<node_internals>/**/*.js"
+      ],
+      "sourceMaps": true,
+      "program": "${workspaceFolder}/bin/batch-transcode-video",
+      "args": [
+        "--input",
+        "~/Videos/test/",
+        "--output",
+        "~/Videos/done/",
+        "--diff"
+      ]
+    }
+  ]
+}
