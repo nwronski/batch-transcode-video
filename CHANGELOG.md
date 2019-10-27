@@ -2,6 +2,23 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
+
+## [v2.0.0] - 2019-10-27
+### Added
+- Disable crop detection with `--nocrop` option (Refs #15, Refs #5)
+  - Skip crop detection entirely (i.e., do not run `detect-crop`) and do not pass a `--crop` value to `transcode-video`.
+
+### Changed
+- **BREAKING CHANGE:** the `--force` option has been renamed to `--crop` to be consistent with new `--nocrop` option
+
+### Fixed
+- Be forgiving when checking transcoding result (Refs #17, Refs #14, Refs #10)
+  - Do not treat it as an error if we cannot get bitrate from finished transcoding job.
+  - Only look for the text `Encoding done!` in the output to confirm success.
+- Do not delete dest files from previous runs (Refs #17, Refs #11)
+  - The issue here was that a "file already exists" error led to the destination file being deleted (when not using the `--diff` flag), so files from previous runs were marked as errored and then removed.
+- Reset font color changes after running `batch-transcode-video --help`
+
 ## [v1.3.0] - 2019-02-20
 ### Added
 - Added `--keep` flag to prevent files from being deleted from the output directory. The `--keep` (alias: `-k`) causes `batch-transcode-video` to **never delete any output files**, no matter what happens, **even if the encoding task fails** for the corresponding input file. If you use this option, input files that fail to encode correctly, or finish encoding, will not be deleted from the output folder. Subsequent runs, with or without using the `--diff` option, will not reprocess the failed input files, unless the corresponding output files are manually deleted.
@@ -147,7 +164,8 @@ All notable changes to this project will be documented in this file.
 - `--quiet` flag
   Log only file writes, errors, and finish (e.g.: success, failure) messages.
 
-[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v1.3.0...HEAD
+[unreleased]: https://github.com/nwronski/batch-transcode-video/compare/v2.0.0...HEAD
+[v2.0.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.3.0...v2.0.0
 [v1.3.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.2.0...v1.3.0
 [v1.2.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/nwronski/batch-transcode-video/compare/v1.0.5...v1.1.0
